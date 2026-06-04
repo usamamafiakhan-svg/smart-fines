@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="smartfine-animations.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>SmartFine Victoria — Track, Manage & Pay Your Fines</title>
@@ -327,6 +326,285 @@ a{text-decoration:none}
   .ex-field.span2{grid-column:auto}
   .auth-right{max-width:100%;min-height:100vh;border-radius:0}
 }
+
+/* ═══════════════════════════════════════════════════
+   PREMIUM ANIMATION SYSTEM — INLINE
+   ═══════════════════════════════════════════════════ */
+
+/* ── Timing tokens ── */
+:root{
+  --spring:cubic-bezier(0.175,0.885,0.32,1.275);
+  --spring-soft:cubic-bezier(0.34,1.56,0.64,1);
+  --expo:cubic-bezier(0.19,1,0.22,1);
+}
+
+/* ── Ripple keyframe ── */
+@keyframes sfRipple{0%{transform:scale(0);opacity:1}100%{transform:scale(1);opacity:0}}
+@keyframes sfSpin{to{transform:rotate(360deg)}}
+@keyframes sfShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-1deg)}40%{transform:translateX(8px) rotate(1deg)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes sfBarGrow{from{width:0!important}}
+@keyframes sfBarShine{0%{transform:translateX(-100%)}50%,100%{transform:translateX(250%)}}
+@keyframes sfModalIn{from{opacity:0;transform:scale(0.84) translateY(-32px)}60%{transform:scale(1.02) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes sfToastIn{from{opacity:0;transform:translateX(-50%) translateY(32px) scale(0.82)}60%{transform:translateX(-50%) translateY(-6px) scale(1.03)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes sfPageIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sfNavGlow{0%,100%{box-shadow:0 0 10px rgba(201,150,58,0.3)}50%{box-shadow:0 0 28px rgba(201,150,58,0.65)}}
+@keyframes sfBadgePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.35)}50%{box-shadow:0 0 0 7px rgba(192,57,43,0)}}
+@keyframes sfAuthGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes sfUploadPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,150,58,0.25)}50%{box-shadow:0 0 0 10px rgba(201,150,58,0)}}
+@keyframes sfDotPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(201,150,58,0.5)}50%{transform:scale(1.18);box-shadow:0 0 0 7px rgba(201,150,58,0)}}
+@keyframes sfShimmer{0%{transform:translateX(-100%) skewX(-12deg)}100%{transform:translateX(230%) skewX(-12deg)}}
+@keyframes sfScaleIn{0%{opacity:0;transform:scale(0.45)}65%{transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+@keyframes sfPopSpring{0%{opacity:0;transform:scale(0.6) translateY(20px)}55%{opacity:1;transform:scale(1.07) translateY(-5px)}75%{transform:scale(0.97) translateY(2px)}100%{transform:scale(1) translateY(0)}}
+@keyframes sfSlideUp{0%{opacity:0;transform:translateY(28px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sfSlideLeft{0%{opacity:0;transform:translateX(-24px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sfSlideRight{0%{opacity:0;transform:translateX(28px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sfDropDown{0%{opacity:0;transform:translateY(-24px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sfNumberPop{0%{opacity:0;transform:scale(0.4) translateY(10px)}55%{opacity:1;transform:scale(1.14) translateY(-4px)}75%{transform:scale(0.96) translateY(1px)}100%{transform:scale(1) translateY(0)}}
+@keyframes sfImageReveal{0%{opacity:0;clip-path:inset(0 100% 0 0)}100%{opacity:1;clip-path:inset(0 0% 0 0)}}
+
+/* ── REVEAL SYSTEM (JS-powered via IntersectionObserver) ── */
+.sf-reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s var(--expo),transform 0.7s var(--expo)}
+.sf-reveal.sf-in-view{opacity:1;transform:translateY(0)}
+
+/* ── AUTH CANVAS ── */
+#auth-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.auth-left>*:not(#auth-canvas){position:relative;z-index:1}
+
+/* ── AUTH LEFT — animated gradient + glow orbs ── */
+.auth-left{
+  background:linear-gradient(-45deg,#0d1b2a,#0a1628,#162436,#0d2742,#0d1b2a);
+  background-size:400% 400%;
+  animation:sfAuthGrad 14s ease infinite;
+}
+
+/* ── AUTH HERO GRADIENT TEXT ── */
+.auth-hero-title{
+  background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.88) 55%,#c9963a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:sfDropDown 0.65s var(--spring-soft) 0.2s both;
+}
+.auth-hero-sub{animation:sfSlideUp 0.55s var(--expo) 0.35s both}
+.auth-brand-row{animation:sfDropDown 0.5s var(--spring-soft) 0.1s both}
+.auth-tagline{animation:sfSlideUp 0.5s var(--expo) 0.9s both}
+
+/* Feature list stagger */
+.auth-feature-list li{opacity:0;animation:sfSlideRight 0.45s var(--expo) forwards}
+.auth-feature-list li:nth-child(1){animation-delay:0.4s}
+.auth-feature-list li:nth-child(2){animation-delay:0.5s}
+.auth-feature-list li:nth-child(3){animation-delay:0.6s}
+.auth-feature-list li:nth-child(4){animation-delay:0.7s}
+.auth-feature-list li:nth-child(5){animation-delay:0.8s}
+.auth-feature-list li i{filter:drop-shadow(0 0 7px rgba(201,150,58,0.65))}
+
+.auth-right{animation:sfSlideUp 0.7s var(--expo) 0.06s both}
+.auth-step.active{animation:sfSlideRight 0.38s var(--expo)}
+
+/* ── OTP BOXES ── */
+.otp-box{opacity:0;animation:sfScaleIn 0.38s var(--spring) backwards;transition:border-color 0.18s,box-shadow 0.18s,transform 0.2s var(--spring-soft)}
+.otp-box:nth-child(1){animation-delay:0.06s}.otp-box:nth-child(2){animation-delay:0.12s}
+.otp-box:nth-child(3){animation-delay:0.18s}.otp-box:nth-child(4){animation-delay:0.24s}
+.otp-box:nth-child(5){animation-delay:0.3s}.otp-box:nth-child(6){animation-delay:0.36s}
+.otp-box:focus{transform:scale(1.1) translateY(-3px);box-shadow:0 6px 20px rgba(201,150,58,0.2),0 0 0 3px rgba(201,150,58,0.18)!important}
+.otp-box.filled{box-shadow:0 0 14px rgba(201,150,58,0.32)}
+.otp-box.shake{animation:sfShake 0.45s ease!important;border-color:var(--red)!important}
+
+/* ── STEP DOTS ── */
+.sdot{transition:all 0.4s var(--spring-soft)}
+.sdot.active{animation:sfDotPulse 2s ease-in-out infinite}
+
+/* ── DEVICE CARDS ── */
+.dvc-card{transition:all 0.3s var(--spring-soft)}
+.dvc-card:hover{transform:translateX(6px) scale(1.01);box-shadow:0 6px 20px rgba(0,0,0,0.1)}
+.dvc-card.on{animation:sfScaleIn 0.3s var(--spring-soft)}
+
+/* ── FORM INPUTS ── */
+.fi{transition:all 0.22s ease}
+.fi:focus{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,150,58,0.14),0 0 0 3px rgba(201,150,58,0.16)!important}
+.fi-wrap:focus-within{transform:translateY(-2px)}
+.fi-wrap:focus-within i{color:var(--gold)!important;transition:color 0.2s}
+
+/* ── TAB BUTTONS ── */
+.tab-btn{transition:all 0.25s var(--spring-soft);position:relative}
+.tab-btn::after{content:'';position:absolute;bottom:-1px;left:50%;width:0;height:2px;background:var(--gold);transform:translateX(-50%);transition:width 0.3s var(--spring-soft)}
+.tab-btn.active::after{width:70%}
+.tab-btn:hover{transform:translateY(-1px)}
+
+/* ── SIDEBAR ── */
+.sidebar{background:linear-gradient(180deg,#0d1b2a 0%,#0a1628 60%,#0c2238 100%)}
+.nav-lnk{transition:all 0.22s var(--spring-soft)}
+.nav-lnk:hover{transform:translateX(5px);color:rgba(255,255,255,0.92)!important}
+.nav-lnk:hover i{transform:scale(1.18) rotate(-5deg)}
+.nav-lnk i{transition:transform 0.25s var(--spring-soft)}
+.nav-lnk.on{animation:sfNavGlow 2.2s ease-in-out infinite}
+.sb-brand:hover .sb-logo{transform:rotate(-8deg) scale(1.12);transition:transform 0.3s var(--spring-soft)}
+.sb-logo{transition:transform 0.3s var(--spring-soft)}
+.sb-user-row:hover .avatar{transform:scale(1.12) rotate(4deg);transition:transform 0.3s var(--spring-soft)}
+.avatar{transition:transform 0.3s var(--spring-soft)}
+.sb-logout{transition:all 0.2s ease}
+.sb-logout:hover{transform:translateX(4px)}
+.mob-btn{transition:all 0.25s var(--spring-soft)}
+.mob-btn:hover{transform:translateY(-4px) scale(1.1)}
+.mob-btn.on i{transform:scale(1.18)}
+.mob-btn i{transition:transform 0.25s var(--spring-soft)}
+
+/* ── PAGE HEADER ── */
+.ph{animation:sfDropDown 0.55s var(--spring-soft) 0.05s both}
+.pt{
+  background:linear-gradient(135deg,var(--navy) 0%,#2a4a6b 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ── STAT TILES ── */
+.stat-tile{
+  opacity:0;animation:sfPopSpring 0.58s var(--spring) forwards;
+  transition:box-shadow 0.3s ease;
+  transform-style:preserve-3d;
+}
+.stat-tile:nth-child(1){animation-delay:0.08s}.stat-tile:nth-child(2){animation-delay:0.18s}
+.stat-tile:nth-child(3){animation-delay:0.28s}.stat-tile:nth-child(4){animation-delay:0.38s}
+
+/* ── CARDS ── */
+.card{
+  transition:transform 0.3s var(--spring-soft),box-shadow 0.3s ease;
+  background:rgba(255,255,255,0.98);
+  backdrop-filter:blur(10px);
+}
+.card:hover{box-shadow:0 14px 42px rgba(13,27,42,0.13),0 2px 8px rgba(13,27,42,0.05)}
+
+/* ── PAGE TRANSITIONS ── */
+.app-page.on{animation:sfPageIn 0.42s var(--expo) both}
+
+/* ── FINE CARDS ── */
+.fine-card{transition:all 0.3s var(--spring-soft);position:relative;overflow:hidden}
+.fine-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--gold);border-radius:4px 0 0 4px;transition:width 0.25s var(--spring-soft)}
+.fine-card:hover{transform:translateX(6px);box-shadow:-4px 0 0 var(--gold),0 8px 28px rgba(13,27,42,0.1)}
+.fine-card:hover::before{width:4px}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#162436 0%,#0d1b2a 100%);
+  transition:transform 0.3s var(--spring-soft),box-shadow 0.3s ease,background 0.2s ease;
+}
+.btn-primary::before{content:'';position:absolute;top:0;left:0;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:translateX(-100%) skewX(-12deg);pointer-events:none}
+.btn-primary:hover::before{animation:sfShimmer 0.58s ease forwards}
+.btn-primary:hover{background:linear-gradient(135deg,#1e3347 0%,#162436 100%);box-shadow:0 10px 32px rgba(13,27,42,0.35)}
+.btn-primary:active{transform:scale(0.97)!important;transition-duration:0.09s}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+.btn-outline{position:relative;overflow:hidden;transition:all 0.28s var(--spring-soft)}
+.btn-outline:hover{border-color:var(--gold)!important;color:var(--navy)!important;transform:translateY(-2px);box-shadow:0 5px 18px rgba(201,150,58,0.18)}
+.btn-outline:active{transform:scale(0.98);transition-duration:0.08s}
+
+.btn-social{position:relative;overflow:hidden;transition:all 0.28s var(--spring-soft)}
+.btn-social::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(201,150,58,0.09);transform:translate(-50%,-50%);transition:width 0.5s ease,height 0.5s ease}
+.btn-social:hover::after{width:400px;height:400px}
+.btn-social:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 8px 24px rgba(0,0,0,0.1);border-color:rgba(201,150,58,0.3)!important}
+.btn-social:active{transform:scale(0.98);transition-duration:0.08s}
+
+.btn-ghost{transition:all 0.2s ease;position:relative}
+.btn-ghost::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1.5px;background:currentColor;transform:scaleX(0);transition:transform 0.25s var(--spring-soft);transform-origin:left}
+.btn-ghost:hover::after{transform:scaleX(1)}
+
+.fc-btn{transition:all 0.22s var(--spring-soft);position:relative;overflow:hidden}
+.fc-btn:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 4px 14px rgba(0,0,0,0.13)}
+.fc-btn:active{transform:scale(0.96);transition-duration:0.07s}
+
+.qa-btn{position:relative;overflow:hidden;transition:all 0.32s var(--spring-soft)}
+.qa-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(201,150,58,0.2) 0%,transparent 70%);transform:translate(-50%,-50%);transition:width 0.45s ease,height 0.45s ease}
+.qa-btn:hover::before{width:300px;height:300px}
+.qa-btn:hover{transform:translateY(-7px) scale(1.07);border-color:var(--gold)!important;box-shadow:0 16px 36px rgba(201,150,58,0.22),0 4px 10px rgba(0,0,0,0.08)}
+.qa-btn:hover i{transform:scale(1.22) rotate(-6deg)!important}
+.qa-btn:active{transform:translateY(-2px) scale(1.01);transition-duration:0.1s}
+.qa-btn i{transition:transform 0.3s var(--spring-soft)!important}
+
+.srs-btn{transition:all 0.25s var(--spring-soft);position:relative;overflow:hidden}
+.srs-btn:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 6px 20px rgba(201,150,58,0.38)}
+.srs-btn:active{transform:scale(0.97)}
+
+.card-act{transition:all 0.22s var(--spring-soft);position:relative}
+.card-act::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1.5px;background:var(--gold);transform:scaleX(0);transition:transform 0.22s var(--spring-soft)}
+.card-act:hover::after{transform:scaleX(1)}
+.card-act:hover{transform:translateX(3px)}
+
+/* ── ROWS ── */
+.veh-row{transition:all 0.25s var(--spring-soft);cursor:pointer}
+.veh-row:hover{background:rgba(201,150,58,0.04);transform:translateX(7px);border-radius:8px;padding-left:8px}
+.veh-row:hover .plate{transform:scale(1.1) rotate(-1.5deg);box-shadow:0 5px 16px rgba(13,27,42,0.32);transition:all 0.3s var(--spring-soft)}
+.plate{transition:all 0.3s var(--spring-soft)}
+.rm-row{transition:all 0.25s var(--spring-soft);cursor:pointer}
+.rm-row:hover{background:rgba(102,126,234,0.05);transform:translateX(6px);border-radius:8px;padding-left:8px}
+.rm-row:hover .rm-icon{transform:scale(1.14) rotate(-6deg)}
+.rm-icon{transition:transform 0.3s var(--spring-soft)}
+.pf-row{transition:all 0.2s ease}
+.pf-row:hover{background:rgba(201,150,58,0.03);border-radius:6px;padding-left:8px}
+
+/* ── BADGES ── */
+.badge{transition:transform 0.2s var(--spring-soft)}
+.badge:hover{transform:scale(1.07)}
+.b-red{animation:sfBadgePulse 2.5s ease-in-out infinite}
+
+/* ── TOGGLE ── */
+.toggle{transition:background 0.28s ease,box-shadow 0.2s ease}
+.toggle::after{transition:all 0.3s var(--spring)}
+.toggle.on{box-shadow:0 0 0 4px rgba(26,122,74,0.18)}
+.toggle:active::after{width:20px}
+.toggle.on:active::after{left:17px;width:20px}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{transition:all 0.3s var(--spring-soft);position:relative}
+.upload-zone:hover,.upload-zone.drag{background:rgba(201,150,58,0.04)!important;transform:scale(1.015);animation:sfUploadPulse 1.8s ease-in-out infinite}
+.upload-zone:hover i,.upload-zone.drag i{transform:scale(1.22) translateY(-5px)!important;color:var(--gold)!important}
+.upload-zone i{transition:transform 0.3s var(--spring-soft),color 0.25s ease}
+
+/* ── PROGRESS BARS ── */
+.prog-fill{transition:width 0.35s ease;position:relative;overflow:hidden}
+.prog-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.38),transparent);animation:sfShimmer 1.7s ease-in-out infinite}
+.dem-bar-fill{animation:sfBarGrow 1.5s var(--expo);position:relative;overflow:hidden}
+.dem-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);animation:sfBarShine 2.5s ease-in-out infinite}
+
+/* ── MODALS ── */
+.modal-overlay{backdrop-filter:blur(10px)!important;background:rgba(13,27,42,0.65)!important}
+.modal-box{animation:sfModalIn 0.48s var(--spring-soft) both}
+
+/* ── TOAST ── */
+.toast.show{animation:sfToastIn 0.44s var(--spring-soft) both!important}
+
+/* ── PREVIEW IMAGE ── */
+.preview-img{animation:sfImageReveal 0.6s var(--expo) both}
+
+/* ── EXTRACTED FIELDS ── */
+.ex-grid>*{opacity:0;animation:sfSlideUp 0.38s var(--expo) forwards}
+.ex-grid>*:nth-child(1){animation-delay:0.04s}.ex-grid>*:nth-child(2){animation-delay:0.09s}
+.ex-grid>*:nth-child(3){animation-delay:0.14s}.ex-grid>*:nth-child(4){animation-delay:0.19s}
+.ex-grid>*:nth-child(5){animation-delay:0.24s}.ex-grid>*:nth-child(6){animation-delay:0.29s}
+.ex-grid>*:nth-child(7){animation-delay:0.34s}.ex-grid>*:nth-child(8){animation-delay:0.39s}
+.ex-grid>*:nth-child(9){animation-delay:0.44s}
+
+/* ── SCAN REMINDER STRIP ── */
+.scan-reminder-strip{background:linear-gradient(135deg,var(--navy) 0%,#162436 60%,#0d2742 100%)!important;border:1px solid rgba(201,150,58,0.2);transition:all 0.28s var(--spring-soft)}
+.scan-reminder-strip:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(13,27,42,0.28)}
+
+/* ── INFO BANNERS ── */
+.info-banner{animation:sfSlideLeft 0.45s var(--expo) both}
+.notice-banner{animation:sfSlideLeft 0.5s var(--expo) both}
+
+/* ── EMPTY STATE ── */
+.empty-state{animation:sfSlideUp 0.5s var(--expo) both}
+
+/* ── SPIN / SHAKE (JS override safety) ── */
+.spin{animation:sfSpin 0.7s linear infinite!important}
+.otp-box.shake{animation:sfShake 0.45s ease!important;border-color:var(--red)!important}
+
+/* ── CURSOR GLOW (desktop only) ── */
+@media(hover:hover){
+  .btn-primary,.qa-btn{cursor:pointer}
+}
+
+/* ── ACCESSIBILITY ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+}
 </style>
 </head>
 <body>
@@ -334,6 +612,7 @@ a{text-decoration:none}
 <!-- ══════════════ AUTH SHELL ══════════════ -->
 <div id="auth-shell">
   <div class="auth-left">
+    <canvas id="auth-canvas"></canvas>
     <div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:2.5rem">
         <div style="width:40px;height:40px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🚗</div>
@@ -1683,6 +1962,212 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM ANIMATION ENGINE
+   ═══════════════════════════════════════════════════════════ */
+
+// ── 1. CANVAS PARTICLE SYSTEM (auth left panel) ───────────
+function initParticles(){
+  const canvas=document.getElementById('auth-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W,H,pts=[];
+
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+  }
+  resize();
+  new ResizeObserver(resize).observe(canvas.parentElement);
+
+  class Pt{
+    constructor(){this.reset(true);}
+    reset(init){
+      this.x=Math.random()*W;
+      this.y=init?Math.random()*H:Math.random()*H;
+      this.r=Math.random()*2+0.4;
+      this.vx=(Math.random()-.5)*0.35;
+      this.vy=(Math.random()-.5)*0.35;
+      this.a=Math.random()*0.55+0.08;
+      this.gold=Math.random()>.65;
+    }
+    tick(){
+      this.x+=this.vx;this.y+=this.vy;
+      if(this.x<-5||this.x>W+5||this.y<-5||this.y>H+5)this.reset(false);
+    }
+    draw(){
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle=this.gold?`rgba(201,150,58,${this.a})`:`rgba(255,255,255,${this.a})`;
+      ctx.fill();
+    }
+  }
+
+  for(let i=0;i<90;i++)pts.push(new Pt());
+
+  function drawLines(){
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<110){
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x,pts[i].y);
+          ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(201,150,58,${0.09*(1-d/110)})`;
+          ctx.lineWidth=0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  (function loop(){
+    ctx.clearRect(0,0,W,H);
+    drawLines();
+    pts.forEach(p=>{p.tick();p.draw();});
+    requestAnimationFrame(loop);
+  })();
+}
+
+// ── 2. INTERSECTION OBSERVER SCROLL REVEALS ──────────────
+function initReveal(){
+  const sel='.card,.fine-card,.rm-row,.veh-row,.pf-row,.dvc-card,.info-banner,.notice-banner,.stat-strip,.upload-zone,.scan-reminder-strip,.empty-state,.ocr-box';
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target;
+      const siblings=[...el.parentElement.children];
+      const idx=siblings.indexOf(el);
+      el.style.transitionDelay=`${Math.min(idx*0.07,0.45)}s`;
+      el.classList.add('sf-in-view');
+      obs.unobserve(el);
+    });
+  },{threshold:0.07});
+  document.querySelectorAll(sel).forEach(el=>{
+    if(!el.classList.contains('sf-reveal')){
+      el.classList.add('sf-reveal');
+    }
+    obs.observe(el);
+  });
+}
+
+// ── 3. CLICK RIPPLE ───────────────────────────────────────
+function initRipple(){
+  function addRipple(e){
+    const btn=e.currentTarget;
+    const rect=btn.getBoundingClientRect();
+    const x=e.clientX-rect.left,y=e.clientY-rect.top;
+    const size=Math.max(rect.width,rect.height)*2.6;
+    const rpl=document.createElement('span');
+    rpl.style.cssText=`position:absolute;border-radius:50%;pointer-events:none;
+      width:${size}px;height:${size}px;
+      left:${x-size/2}px;top:${y-size/2}px;
+      background:rgba(255,255,255,0.22);
+      transform:scale(0);animation:sfRipple 0.65s ease-out forwards;z-index:10`;
+    btn.appendChild(rpl);
+    setTimeout(()=>rpl.remove(),700);
+  }
+  document.querySelectorAll('.btn-primary,.btn-social,.qa-btn,.srs-btn,.fc-btn').forEach(b=>{
+    if(!b._ripple){b._ripple=true;b.addEventListener('click',addRipple);}
+  });
+}
+
+// ── 4. MAGNETIC HOVER (desktop) ──────────────────────────
+function initMagnetic(){
+  if(!matchMedia('(hover:hover)').matches)return;
+  document.querySelectorAll('.btn-primary,.qa-btn').forEach(btn=>{
+    if(btn._mag)return;btn._mag=true;
+    btn.addEventListener('mousemove',e=>{
+      const r=btn.getBoundingClientRect();
+      const x=(e.clientX-r.left-r.width/2)*0.2;
+      const y=(e.clientY-r.top-r.height/2)*0.2;
+      btn.style.transform=`translate(${x}px,${y}px) translateY(-3px)`;
+    });
+    btn.addEventListener('mouseleave',()=>{
+      btn.style.transform='';
+      btn.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+      setTimeout(()=>{btn.style.transition='';},500);
+    });
+  });
+}
+
+// ── 5. 3D TILT ON STAT TILES ─────────────────────────────
+function initTilt(){
+  if(!matchMedia('(hover:hover)').matches)return;
+  document.querySelectorAll('.stat-tile').forEach(tile=>{
+    if(tile._tilt)return;tile._tilt=true;
+    tile.addEventListener('mousemove',e=>{
+      const r=tile.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width;
+      const y=(e.clientY-r.top)/r.height;
+      const tx=(y-.5)*16,ty=(x-.5)*-16;
+      tile.style.transform=`perspective(700px) rotateX(${tx}deg) rotateY(${ty}deg) translateY(-5px) scale(1.03)`;
+      tile.style.boxShadow=`${ty*0.5}px ${-tx*0.5+14}px 36px rgba(13,27,42,0.15)`;
+    });
+    tile.addEventListener('mouseleave',()=>{
+      tile.style.transform='';tile.style.boxShadow='';
+      tile.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.4s ease';
+      setTimeout(()=>tile.style.transition='',500);
+    });
+  });
+}
+
+// ── 6. NUMBER COUNTER ANIMATION ──────────────────────────
+function animateNum(el,target,dur=1100){
+  if(el._counting)return;el._counting=true;
+  const t0=performance.now();
+  const pfx=el.getAttribute('data-pfx')||'';
+  const sfx=el.getAttribute('data-sfx')||'';
+  const isFloat=String(target).includes('.');
+  (function tick(now){
+    const p=Math.min((now-t0)/dur,1);
+    const e=1-Math.pow(1-p,3);
+    const v=target*e;
+    el.textContent=pfx+(isFloat?v.toFixed(2):Math.round(v))+sfx;
+    if(p<1)requestAnimationFrame(tick);
+    else el._counting=false;
+  })(t0);
+}
+
+function initCounters(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target;
+      const raw=el.textContent.trim();
+      const hasDollar=raw.startsWith('$');
+      const m=raw.match(/([0-9,]+\.?[0-9]*)/);
+      if(m){
+        const num=parseFloat(m[1].replace(/,/g,''));
+        if(!isNaN(num)&&num>0){
+          if(hasDollar)el.setAttribute('data-pfx','$');
+          animateNum(el,num);
+        }
+      }
+      obs.unobserve(el);
+    });
+  },{threshold:0.6});
+  document.querySelectorAll('.st-val,#dem-num').forEach(el=>obs.observe(el));
+}
+
+// ── 7. RE-INIT ON PAGE NAVIGATION ────────────────────────
+const _go=go;
+function go(page){
+  _go(page);
+  setTimeout(()=>{
+    initReveal();initRipple();initMagnetic();initTilt();initCounters();
+  },60);
+}
+
+// ── BOOT ─────────────────────────────────────────────────
+initParticles();
+initReveal();
+initRipple();
+initMagnetic();
+initTilt();
+initCounters();
 
 init();
 </script>
