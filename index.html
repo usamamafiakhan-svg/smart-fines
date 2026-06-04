@@ -328,6 +328,99 @@ a{text-decoration:none}
 }
 
 /* ═══════════════════════════════════════════════════
+   INTRO / SPLASH SCREEN
+   ═══════════════════════════════════════════════════ */
+#sf-intro{
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  background:#0a1420;overflow:hidden;
+}
+#sf-intro.sf-splitting .sf-curtain-top{transform:translateY(-100%)}
+#sf-intro.sf-splitting .sf-curtain-bot{transform:translateY(100%)}
+#sf-intro.sf-gone{display:none}
+
+#intro-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+.sf-curtain-top,.sf-curtain-bot{
+  position:absolute;left:0;right:0;height:50%;
+  background:#0a1420;z-index:2;
+  transition:transform 0.9s cubic-bezier(0.76,0,0.24,1);
+}
+.sf-curtain-top{top:0}
+.sf-curtain-bot{bottom:0}
+
+.sf-intro-inner{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;text-align:center;
+}
+
+.sf-intro-logo{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,#c9963a,#e8b84b);
+  border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 0 0 0 rgba(201,150,58,0.5);
+  opacity:0;transform:scale(0.4) rotate(-15deg);
+  transition:all 0s;
+  margin-bottom:22px;
+}
+.sf-intro-logo.in{
+  opacity:1;transform:scale(1) rotate(0deg);
+  transition:opacity 0.6s cubic-bezier(0.34,1.56,0.64,1),
+             transform 0.6s cubic-bezier(0.34,1.56,0.64,1),
+             box-shadow 0.4s ease;
+  box-shadow:0 0 40px rgba(201,150,58,0.45),0 0 80px rgba(201,150,58,0.2);
+}
+
+.sf-intro-brand{
+  font-size:clamp(22px,4vw,36px);font-weight:700;
+  color:#fff;letter-spacing:-0.5px;
+  height:1.3em;overflow:hidden;margin-bottom:8px;
+}
+.sf-intro-brand span{
+  display:inline-block;
+  opacity:0;transform:translateY(100%);
+  transition:opacity 0s,transform 0s;
+}
+.sf-intro-brand span.in{
+  opacity:1;transform:translateY(0);
+  transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.sf-intro-sub{
+  font-size:13px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(201,150,58,0.85);
+  opacity:0;transform:translateY(10px);
+  transition:opacity 0s,transform 0s;
+  margin-bottom:36px;
+}
+.sf-intro-sub.in{
+  opacity:1;transform:translateY(0);
+  transition:opacity 0.5s ease 0s,transform 0.5s cubic-bezier(0.19,1,0.22,1) 0s;
+}
+
+.sf-intro-bar-wrap{
+  width:200px;height:2px;background:rgba(255,255,255,0.08);
+  border-radius:99px;overflow:hidden;
+  opacity:0;transition:opacity 0.3s ease;
+}
+.sf-intro-bar-wrap.in{opacity:1}
+.sf-intro-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#c9963a,#f0c060,#c9963a);
+  background-size:200% 100%;
+  border-radius:99px;
+  transition:width 1.4s cubic-bezier(0.19,1,0.22,1);
+  animation:introBarShine 1.5s linear infinite;
+}
+@keyframes introBarShine{
+  0%{background-position:100% 0}100%{background-position:-100% 0}
+}
+.sf-intro-bar.full{width:100%}
+
+/* ═══════════════════════════════════════════════════
    PREMIUM ANIMATION SYSTEM — INLINE
    ═══════════════════════════════════════════════════ */
 
@@ -608,6 +701,21 @@ a{text-decoration:none}
 </style>
 </head>
 <body>
+
+<!-- ══════════════ INTRO SPLASH ══════════════ -->
+<div id="sf-intro" role="presentation" aria-hidden="true">
+  <canvas id="intro-canvas"></canvas>
+  <div class="sf-curtain-top"></div>
+  <div class="sf-curtain-bot"></div>
+  <div class="sf-intro-inner">
+    <div class="sf-intro-logo" id="intro-logo">🚗</div>
+    <div class="sf-intro-brand" id="intro-brand"></div>
+    <div class="sf-intro-sub" id="intro-sub">Track · Manage · Pay</div>
+    <div class="sf-intro-bar-wrap" id="intro-bar-wrap">
+      <div class="sf-intro-bar" id="intro-bar"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════ AUTH SHELL ══════════════ -->
 <div id="auth-shell">
@@ -1966,6 +2074,147 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 /* ═══════════════════════════════════════════════════════════
    PREMIUM ANIMATION ENGINE
    ═══════════════════════════════════════════════════════════ */
+
+// ── 0. INTRO SPLASH ──────────────────────────────────────
+(function runIntro(){
+  const intro=document.getElementById('sf-intro');
+  if(!intro)return;
+
+  /* ── Intro canvas: radial burst + orbiting particles ── */
+  const cv=document.getElementById('intro-canvas');
+  const ctx=cv.getContext('2d');
+  let W,H,t=0,burst=[],orbs=[];
+
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;}
+  resize();window.addEventListener('resize',resize);
+
+  /* Central pulse rings */
+  const rings=[];
+  function spawnRing(){rings.push({r:0,a:1});}
+  setInterval(spawnRing,900);spawnRing();
+
+  /* Floating orbs */
+  for(let i=0;i<60;i++){
+    orbs.push({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.8+0.4,
+      vx:(Math.random()-.5)*0.5,vy:(Math.random()-.5)*0.5,
+      a:Math.random()*0.6+0.1,
+      gold:Math.random()>.6
+    });
+  }
+
+  /* Burst lines from center */
+  function spawnBurst(){
+    for(let i=0;i<12;i++){
+      const angle=(Math.PI*2/12)*i;
+      burst.push({angle,len:0,maxLen:Math.random()*180+80,speed:Math.random()*5+3,a:0.8});
+    }
+  }
+  spawnBurst();
+
+  function drawFrame(){
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2;
+
+    /* Gradient radial background glow */
+    const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*0.55);
+    grd.addColorStop(0,'rgba(201,150,58,0.07)');
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+
+    /* Pulse rings */
+    rings.forEach((ring,i)=>{
+      ring.r+=1.4;ring.a=Math.max(0,ring.a-0.008);
+      ctx.beginPath();ctx.arc(cx,cy,ring.r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(201,150,58,${ring.a*0.5})`;
+      ctx.lineWidth=1.5;ctx.stroke();
+    });
+    rings.splice(0,rings.findIndex(r=>r.a>0));
+
+    /* Burst lines */
+    burst.forEach(b=>{
+      if(b.len<b.maxLen)b.len+=b.speed;
+      else b.a=Math.max(0,b.a-0.015);
+      const ex=cx+Math.cos(b.angle)*b.len;
+      const ey=cy+Math.sin(b.angle)*b.len;
+      const sg=ctx.createLinearGradient(cx,cy,ex,ey);
+      sg.addColorStop(0,`rgba(201,150,58,${b.a*0.6})`);
+      sg.addColorStop(1,'rgba(201,150,58,0)');
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);
+      ctx.strokeStyle=sg;ctx.lineWidth=1;ctx.stroke();
+    });
+
+    /* Orbs */
+    orbs.forEach(o=>{
+      o.x+=o.vx;o.y+=o.vy;
+      if(o.x<0||o.x>W)o.vx*=-1;
+      if(o.y<0||o.y>H)o.vy*=-1;
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+      ctx.fillStyle=o.gold?`rgba(201,150,58,${o.a})`:`rgba(255,255,255,${o.a*0.5})`;
+      ctx.fill();
+    });
+
+    /* Connection lines between close orbs */
+    for(let i=0;i<orbs.length;i++){
+      for(let j=i+1;j<orbs.length;j++){
+        const dx=orbs[i].x-orbs[j].x,dy=orbs[i].y-orbs[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<90){
+          ctx.beginPath();ctx.moveTo(orbs[i].x,orbs[i].y);ctx.lineTo(orbs[j].x,orbs[j].y);
+          ctx.strokeStyle=`rgba(201,150,58,${0.07*(1-d/90)})`;
+          ctx.lineWidth=0.5;ctx.stroke();
+        }
+      }
+    }
+
+    t++;
+    if(!intro.classList.contains('sf-gone'))requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+
+  /* ── Text character-by-character reveal ── */
+  const brandEl=document.getElementById('intro-brand');
+  const text='SmartFine Victoria';
+  text.split('').forEach(ch=>{
+    const s=document.createElement('span');
+    s.textContent=ch==' '?' ':ch;
+    brandEl.appendChild(s);
+  });
+
+  function revealChars(delay){
+    brandEl.querySelectorAll('span').forEach((s,i)=>{
+      setTimeout(()=>s.classList.add('in'),delay+i*45);
+    });
+  }
+
+  /* ── Sequence ── */
+  // 300ms: logo pops in
+  setTimeout(()=>document.getElementById('intro-logo').classList.add('in'),300);
+
+  // 700ms: brand text reveals char by char
+  setTimeout(()=>revealChars(0),700);
+
+  // 1100ms: sub tagline fades in
+  setTimeout(()=>document.getElementById('intro-sub').classList.add('in'),1100);
+
+  // 1300ms: progress bar appears and fills
+  setTimeout(()=>{
+    const wrap=document.getElementById('intro-bar-wrap');
+    wrap.classList.add('in');
+    setTimeout(()=>document.getElementById('intro-bar').classList.add('full'),80);
+  },1300);
+
+  // 2900ms: curtain splits open
+  setTimeout(()=>{
+    intro.classList.add('sf-splitting');
+  },2900);
+
+  // 3800ms: completely remove
+  setTimeout(()=>{
+    intro.classList.add('sf-gone');
+  },3800);
+})();
 
 // ── 1. CANVAS PARTICLE SYSTEM (auth left panel) ───────────
 function initParticles(){
