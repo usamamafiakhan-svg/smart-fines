@@ -902,7 +902,10 @@ a{text-decoration:none}
 
         <!-- FINES -->
         <div class="app-page" id="page-fines">
-          <div class="ph"><div class="pt">My fines</div><div class="ps">All infringement notices across your registered vehicles — tap Edit to change any details</div></div>
+          <div class="ph" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div><div class="pt">My fines</div><div class="ps">All infringement notices across your registered vehicles — tap Edit to change any details</div></div>
+            <button class="btn btn-primary" style="width:auto;white-space:nowrap;flex-shrink:0;padding:10px 16px;font-size:13px" onclick="openAddFineForm()"><i class="ti ti-plus" aria-hidden="true"></i> Add fine</button>
+          </div>
           <div id="fines-list"></div>
         </div>
 
@@ -2057,19 +2060,24 @@ function manualLookup(){
   const inf=document.getElementById('m-inf').value.trim();
   const rego=document.getElementById('m-rego').value.trim().toUpperCase();
   if(!inf&&!rego){showToast('Enter an infringement number or registration');return;}
-  showToast('Looking up fine...');
+  const found=getFines().find(f=>f.id===inf||(rego&&f.rego===rego));
+  if(found){showToast('This fine is already in your dashboard');setTimeout(()=>go('fines'),900);return;}
+  // Pre-fill the extraction form with what the user entered so they can fill in the rest
+  showExtracted({infNumber:inf,amount:'',totalAmount:'',offence:'',offDate:'',location:'Victoria',due:'',rego,personName:'',demerit:0});
+  document.getElementById('preview-img').src='';
+  document.getElementById('scan-upload-section').style.display='none';
+  document.getElementById('scan-result-section').style.display='block';
+  showToast('Fill in the fine details below and tap Save');
+}
+function openAddFineForm(){
+  go('scan');
   setTimeout(()=>{
-    const found=getFines().find(f=>f.id===inf||f.rego===rego);
-    if(found){showToast('Fine found — already in your dashboard');setTimeout(()=>go('fines'),900);}
-    else{
-      const os=['Fail to give way','Parking — no valid permit','Unregistered vehicle','Fail to stop at stop sign'];
-      const as=[313,110,1046,313];const i=Math.floor(Math.random()*4);
-      showExtracted({infNumber:inf||'VIC-'+Math.floor(Math.random()*9e6),amount:as[i],totalAmount:as[i],offence:os[i],offDate:'',location:'Victoria',due:'1 Aug 2025',rego,personName:'',demerit:i===1?null:1});
-      document.getElementById('preview-img').src='';
-      document.getElementById('scan-upload-section').style.display='none';
-      document.getElementById('scan-result-section').style.display='block';
-    }
-  },1100);
+    showExtracted({infNumber:'',amount:'',totalAmount:'',offence:'',offDate:'',location:'Victoria',due:'',rego:'',personName:'',demerit:0});
+    document.getElementById('preview-img').src='';
+    document.getElementById('scan-upload-section').style.display='none';
+    document.getElementById('scan-result-section').style.display='block';
+    showToast('Fill in the fine details and tap Save');
+  },50);
 }
 function openPayment(){showToast('Opening Fines Victoria...');setTimeout(()=>window.open('https://online.fines.vic.gov.au','_blank'),700);}
 function editProfile(){showToast('Profile editing — coming in full release');}
@@ -2467,10 +2475,16 @@ function initReveal(){
     });
   },{threshold:0.07});
   document.querySelectorAll(sel).forEach(el=>{
-    if(!el.classList.contains('sf-reveal')){
-      el.classList.add('sf-reveal');
+    if(el.classList.contains('sf-in-view'))return; // already revealed
+    const r=el.getBoundingClientRect();
+    const alreadyVisible=r.top<window.innerHeight&&r.bottom>0&&r.width>0;
+    if(alreadyVisible){
+      // Reveal immediately — no opacity flash for above-the-fold content
+      el.classList.add('sf-reveal','sf-in-view');
+    } else {
+      if(!el.classList.contains('sf-reveal'))el.classList.add('sf-reveal');
+      obs.observe(el);
     }
-    obs.observe(el);
   });
 }
 
