@@ -481,7 +481,7 @@ a{text-decoration:none}
 .auth-step.active{animation:sfSlideRight 0.38s var(--expo)}
 
 /* ── OTP BOXES ── */
-.otp-box{opacity:0;animation:sfScaleIn 0.38s var(--spring) backwards;transition:border-color 0.18s,box-shadow 0.18s,transform 0.2s var(--spring-soft)}
+.otp-box{animation:sfScaleIn 0.38s var(--spring) both;transition:border-color 0.18s,box-shadow 0.18s,transform 0.2s var(--spring-soft)}
 .otp-box:nth-child(1){animation-delay:0.06s}.otp-box:nth-child(2){animation-delay:0.12s}
 .otp-box:nth-child(3){animation-delay:0.18s}.otp-box:nth-child(4){animation-delay:0.24s}
 .otp-box:nth-child(5){animation-delay:0.3s}.otp-box:nth-child(6){animation-delay:0.36s}
@@ -924,125 +924,94 @@ a{text-decoration:none}
 
         <!-- REMINDERS -->
         <div class="app-page" id="page-reminders">
-          <div class="ph"><div class="pt">Reminders & Alerts</div><div class="ps">Three real notification systems — set up any or all of them</div></div>
+          <div class="ph"><div class="pt">Reminders & Alerts</div><div class="ps">Real-time email and browser notifications for every fine deadline</div></div>
 
-          <!-- ① EMAIL — EmailJS (works right now, free) -->
-          <div class="card" style="border:1px solid var(--blue)">
+          <!-- EMAIL REMINDERS -->
+          <div class="card" style="border:1.5px solid var(--blue)">
             <div class="card-hd">
-              <div class="card-lbl">📧 Email reminders <span class="badge b-green" style="margin-left:6px">Free · Works now</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:var(--blue-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📧</div><div><div class="card-lbl">Email reminders</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Powered by EmailJS · Free · No server needed</div></div></div>
               <span id="email-status-badge" class="badge b-grey">Not set up</span>
-            </div>
-            <div style="font-size:14px;color:var(--text2);margin-bottom:1rem;line-height:1.6">
-              Real emails sent directly from this app via EmailJS — no server needed. Takes 3 minutes to set up. Free for up to 200 emails/month.
             </div>
             <div id="emailjs-setup-panel">
               <div class="info-banner info" style="margin-bottom:1rem">
                 <i class="ti ti-info-circle" aria-hidden="true"></i>
-                <div><strong>How to set up (3 mins):</strong><br>
-                1. Go to <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue)">emailjs.com</a> → create free account<br>
-                2. Add Email Service → copy <strong>Service ID</strong><br>
-                3. Create Template → copy <strong>Template ID</strong><br>
-                4. Account → API Keys → copy <strong>Public Key</strong><br>
-                5. Paste all three below and click Save</div>
+                <div><strong>3-minute setup:</strong> Go to <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue);font-weight:600">emailjs.com</a> → create free account → Add Email Service → Create Template → paste the 3 keys below. Free for 200 emails/month.</div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-                <div><label class="fl">EmailJS Service ID</label><input class="fi no-icon" id="ejs-service" placeholder="service_xxxxxxx"></div>
-                <div><label class="fl">EmailJS Template ID</label><input class="fi no-icon" id="ejs-template" placeholder="template_xxxxxxx"></div>
+                <div><label class="fl">Service ID</label><input class="fi no-icon" id="ejs-service" placeholder="service_xxxxxxx"></div>
+                <div><label class="fl">Template ID</label><input class="fi no-icon" id="ejs-template" placeholder="template_xxxxxxx"></div>
               </div>
-              <div style="margin-bottom:1rem"><label class="fl">EmailJS Public Key</label><input class="fi no-icon" id="ejs-pubkey" placeholder="your_public_key_here"></div>
-              <div style="margin-bottom:1rem"><label class="fl">Your email address (to receive reminders)</label>
-                <div class="fi-wrap"><i class="ti ti-mail" aria-hidden="true"></i><input class="fi" id="reminder-email" type="email" placeholder="you@example.com"></div>
-              </div>
+              <div style="margin-bottom:10px"><label class="fl">Public Key</label><input class="fi no-icon" id="ejs-pubkey" placeholder="your_public_key"></div>
+              <div style="margin-bottom:1rem"><label class="fl">Your email address</label><div class="fi-wrap"><i class="ti ti-mail" aria-hidden="true"></i><input class="fi" id="reminder-email" type="email" placeholder="you@example.com"></div></div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-primary" style="flex:2" onclick="saveEmailJS()"><i class="ti ti-check" aria-hidden="true"></i> Save & send test email</button>
-                <button class="btn-outline" style="flex:1;margin-top:0" onclick="skipEmailDemo()">Skip — demo only</button>
+                <button class="btn btn-primary" style="flex:1" onclick="saveEmailJS()"><i class="ti ti-check" aria-hidden="true"></i> Connect & send test</button>
+                <button class="btn-outline" style="flex:0 0 auto;margin-top:0;padding:12px 16px" onclick="skipEmailDemo()">Demo mode</button>
               </div>
             </div>
             <div id="emailjs-active-panel" style="display:none">
-              <div class="info-banner success"><i class="ti ti-circle-check" aria-hidden="true"></i> <strong>Email reminders active</strong> — you'll receive alerts at 14, 7, 3 days and day-of for every fine.</div>
-              <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Sending to: <strong id="email-display">—</strong></div>
-              <button class="btn-outline" onclick="testEmailNow()" style="margin-top:0"><i class="ti ti-send" aria-hidden="true"></i> Send test email now</button>
-              <button class="btn-outline" onclick="resetEmailJS()" style="margin-top:8px;color:var(--text3)">Reset email settings</button>
+              <div class="info-banner success" style="margin-bottom:1rem"><i class="ti ti-circle-check" aria-hidden="true"></i> <span>Sending to <strong id="email-display">—</strong></span></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-primary" style="flex:1;min-width:160px" onclick="testEmailNow()"><i class="ti ti-send" aria-hidden="true"></i> Send test email now</button>
+                <button class="btn-outline" style="flex:0 0 auto;margin-top:0" onclick="resetEmailJS()">Reset</button>
+              </div>
             </div>
           </div>
 
-          <!-- ② BROWSER PUSH — works on desktop + Android -->
-          <div class="card" style="border:1px solid var(--amber)">
+          <!-- BROWSER PUSH -->
+          <div class="card" style="border:1.5px solid var(--amber)">
             <div class="card-hd">
-              <div class="card-lbl">🔔 Browser push notifications <span class="badge b-amber" style="margin-left:6px">Desktop + Android</span></div>
-              <span id="push-status-badge" class="badge b-grey">Not enabled</span>
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:var(--amber-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🔔</div><div><div class="card-lbl">In-app push notifications</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Real-time · Works on all devices · Even when app is closed</div></div></div>
+              <span id="push-status-badge" class="badge b-grey">Off</span>
             </div>
-            <div style="font-size:14px;color:var(--text2);margin-bottom:1rem;line-height:1.6">
-              Real browser notifications — alerts pop up even when SmartFine isn't open. Works on Chrome, Firefox, Edge. On Android Chrome works as a native app notification.
-            </div>
+            <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6">Browser notifications that pop up immediately — on desktop, Android, and iOS Safari 16.4+. Fires automatically the moment a reminder is due.</p>
             <div id="push-setup-panel">
-              <button class="btn btn-primary" id="push-enable-btn" onclick="initPush()"><i class="ti ti-bell" aria-hidden="true"></i> Enable push notifications</button>
+              <button class="btn btn-primary" onclick="initPush()"><i class="ti ti-bell" aria-hidden="true"></i> Enable notifications — one click</button>
             </div>
             <div id="push-active-panel" style="display:none">
-              <div class="info-banner success"><i class="ti ti-circle-check" aria-hidden="true"></i> <strong>Push notifications active</strong> — you'll see a browser alert before each deadline.</div>
-              <button class="btn-outline" onclick="testPushNow()" style="margin-top:8px"><i class="ti ti-bell" aria-hidden="true"></i> Send test notification now</button>
+              <div class="info-banner success" style="margin-bottom:1rem"><i class="ti ti-circle-check" aria-hidden="true"></i> <strong>Active</strong> — you'll get alerts at 14, 7, 3 days and on the due date</div>
+              <button class="btn-outline" onclick="testPushNow()" style="margin-top:0"><i class="ti ti-bell" aria-hidden="true"></i> Send test notification now</button>
             </div>
           </div>
 
-          <!-- ③ SMS — requires Netlify deploy -->
-          <div class="card" style="border:1px solid var(--green)">
-            <div class="card-hd">
-              <div class="card-lbl">📱 Real SMS text messages <span class="badge b-blue" style="margin-left:6px">Needs Netlify deploy</span></div>
-              <span id="sms-status-badge" class="badge b-grey">Not configured</span>
-            </div>
-            <div style="font-size:14px;color:var(--text2);margin-bottom:1rem;line-height:1.6">
-              Sends actual text messages to any Australian mobile via Twilio. Requires deploying the app to Netlify (free) and a Twilio account (~$2 AUD credit).
-            </div>
-            <div class="info-banner info" style="margin-bottom:1rem">
-              <i class="ti ti-tool" aria-hidden="true"></i>
-              <div><strong>Setup steps:</strong><br>
-              1. Download the Netlify package below<br>
-              2. Sign up free at <a href="https://netlify.com" target="_blank" style="color:var(--blue)">netlify.com</a> → drag-drop the folder<br>
-              3. Sign up at <a href="https://twilio.com" target="_blank" style="color:var(--blue)">twilio.com</a> → get Account SID + Auth Token + AU number<br>
-              4. In Netlify → Site Settings → Environment Variables, add:<br>
-              &nbsp;&nbsp;&nbsp;<code style="font-family:var(--mono);background:var(--surface2);padding:1px 4px;border-radius:3px">TWILIO_SID</code>, <code style="font-family:var(--mono);background:var(--surface2);padding:1px 4px;border-radius:3px">TWILIO_TOKEN</code>, <code style="font-family:var(--mono);background:var(--surface2);padding:1px 4px;border-radius:3px">TWILIO_FROM</code><br>
-              5. Done — real SMS will send automatically</div>
-            </div>
-            <div style="margin-bottom:1rem">
-              <label class="fl">Your mobile number (for when SMS is live)</label>
-              <div class="phone-row"><div class="phone-pre">🇦🇺 +61</div><input class="fi no-icon" id="sms-phone-global" type="tel" placeholder="4xx xxx xxx" style="flex:1"></div>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn btn-primary" style="flex:2;min-width:160px" onclick="saveGlobalSMS()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save mobile number</button>
-              <button class="btn-outline" style="flex:1;min-width:120px;margin-top:0" onclick="downloadNetlifyPkg()"><i class="ti ti-download" aria-hidden="true"></i> Download Netlify package</button>
-            </div>
-            <div class="sms-preview" id="sms-preview-global" style="display:none;margin-top:1rem">
-              <strong>SMS that will be sent to your number:</strong><br><br>
-              "SmartFine VIC: Fine #<span id="sp-id">—</span> of $<span id="sp-amt">—</span> is due in 7 days (<span id="sp-due">—</span>). Pay at fines.vic.gov.au or call 1300 369 819. Reply STOP to opt out."
-            </div>
-          </div>
-
-          <!-- Upcoming deadlines -->
-          <div class="card"><div class="card-hd"><div class="card-lbl">Upcoming deadlines</div></div><div id="reminder-list"></div></div>
-
-          <!-- Notification schedule -->
+          <!-- NOTIFICATION SCHEDULE -->
           <div class="card">
-            <div class="card-hd"><div class="card-lbl">Notification schedule</div></div>
-            <div class="rm-row"><div class="rm-icon amber"><i class="ti ti-bell" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">14 days before due date</div><div class="rm-meta">Email + push + SMS</div></div><button class="toggle on" id="tog-14" onclick="this.classList.toggle('on')" aria-label="14-day toggle"></button></div>
-            <div class="rm-row"><div class="rm-icon amber"><i class="ti ti-bell" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">7 days before due date</div><div class="rm-meta">Email + push + SMS</div></div><button class="toggle on" id="tog-7" onclick="this.classList.toggle('on')" aria-label="7-day toggle"></button></div>
-            <div class="rm-row"><div class="rm-icon red"><i class="ti ti-bell" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">3 days before due date</div><div class="rm-meta">Email + push + SMS</div></div><button class="toggle on" id="tog-3" onclick="this.classList.toggle('on')" aria-label="3-day toggle"></button></div>
-            <div class="rm-row" style="border-bottom:none"><div class="rm-icon red"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">Day of due date</div><div class="rm-meta">All channels — urgent alert</div></div><button class="toggle on" id="tog-0" onclick="this.classList.toggle('on')" aria-label="day-of toggle"></button></div>
+            <div class="card-hd"><div class="card-lbl">When to notify me</div></div>
+            <div class="rm-row"><div class="rm-icon blue"><i class="ti ti-calendar" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">14 days before due</div><div class="rm-meta">Early heads-up — plan your payment</div></div><button class="toggle on" id="tog-14" onclick="this.classList.toggle('on')" aria-label="14-day toggle"></button></div>
+            <div class="rm-row"><div class="rm-icon amber"><i class="ti ti-bell" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">7 days before due</div><div class="rm-meta">One week reminder</div></div><button class="toggle on" id="tog-7" onclick="this.classList.toggle('on')" aria-label="7-day toggle"></button></div>
+            <div class="rm-row"><div class="rm-icon amber"><i class="ti ti-bell" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">3 days before due</div><div class="rm-meta">Urgent reminder</div></div><button class="toggle on" id="tog-3" onclick="this.classList.toggle('on')" aria-label="3-day toggle"></button></div>
+            <div class="rm-row" style="border-bottom:none"><div class="rm-icon red"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">Day of due date</div><div class="rm-meta">Final urgent alert</div></div><button class="toggle on" id="tog-0" onclick="this.classList.toggle('on')" aria-label="day-of toggle"></button></div>
+          </div>
+
+          <!-- UPCOMING DEADLINES -->
+          <div class="card">
+            <div class="card-hd"><div class="card-lbl">Upcoming fine deadlines</div></div>
+            <div id="reminder-list"></div>
+          </div>
+
+          <!-- CUSTOM REMINDER -->
+          <div class="card" style="border:1.5px solid var(--green)">
+            <div class="card-hd">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:var(--green-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">⏰</div><div><div class="card-lbl">Add custom reminder</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Set any reminder — appointment, renewal, payment</div></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div><label class="fl">Reminder note</label><input class="fi no-icon" id="crem-note" placeholder="e.g. Pay red light fine"></div>
+              <div><label class="fl">Date & time</label><input class="fi no-icon" id="crem-dt" type="datetime-local"></div>
+            </div>
+            <button class="btn btn-primary" onclick="addCustomReminder()"><i class="ti ti-plus" aria-hidden="true"></i> Add reminder</button>
+            <div id="custom-reminders-list" style="margin-top:1rem"></div>
           </div>
         </div>
 
         <!-- FAMILY -->
         <div class="app-page" id="page-family">
-          <div class="ph"><div class="pt">Family & fleet</div><div class="ps">All fines across every vehicle in one dashboard</div></div>
+          <div class="ph"><div class="pt">Family & fleet</div><div class="ps">Manage drivers and vehicles in your household</div></div>
+          <div id="family-stats-strip"></div>
           <div class="card">
-            <div class="card-hd"><div class="card-lbl">Registered vehicles</div><button class="card-act" onclick="showToast('Add vehicle coming in full release')"><i class="ti ti-plus" aria-hidden="true"></i> Add vehicle</button></div>
-            <div class="veh-row"><div class="plate">ABC123</div><div class="veh-body"><div class="veh-name">Alex's Toyota Camry</div><div class="veh-sub">Primary vehicle · Victoria</div></div><span class="badge b-red">2 fines</span></div>
-            <div class="veh-row"><div class="plate">XYZ987</div><div class="veh-body"><div class="veh-name">Sarah's Honda CRV</div><div class="veh-sub">Partner · Victoria</div></div><span class="badge b-green">Clear</span></div>
-            <div class="veh-row" style="border-bottom:none"><div class="plate">DEF456</div><div class="veh-body"><div class="veh-name">Jamie's Mazda 3</div><div class="veh-sub">Child · P-plate · Victoria</div></div><span class="badge b-amber">1 fine</span></div>
-          </div>
-          <div class="stat-strip">
-            <div class="stat-tile"><div class="st-label">Total fines</div><div class="st-val c-red">3</div></div>
-            <div class="stat-tile"><div class="st-label">Total owed</div><div class="st-val c-amber">$1,673</div></div>
-            <div class="stat-tile"><div class="st-label">Vehicles tracked</div><div class="st-val c-blue">3</div></div>
+            <div class="card-hd">
+              <div class="card-lbl">Members & vehicles</div>
+              <button class="card-act" onclick="openFamilyModal()"><i class="ti ti-plus" aria-hidden="true"></i> Add member</button>
+            </div>
+            <div id="family-members-list"><div class="empty-state" style="padding:2rem"><i class="ti ti-users" aria-hidden="true"></i><div class="empty-title">No members yet</div><div class="empty-sub">Add family members and their vehicles to track fines together</div></div></div>
           </div>
         </div>
 
@@ -1152,7 +1121,57 @@ a{text-decoration:none}
 .qa-btn i{font-size:24px}
 .qa-btn:hover{border-color:var(--gold);background:var(--gold-lt)}
 .c-gold{color:var(--gold)}.c-blue{color:var(--blue)}.c-amber{color:var(--amber)}.c-green{color:var(--green)}
+/* Family member cards */
+.fm-card{border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:10px;transition:all 0.25s}
+.fm-card:hover{border-color:var(--border2);box-shadow:0 4px 16px rgba(13,27,42,0.08)}
+.fm-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.fm-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.fm-name{font-size:14px;font-weight:600;color:var(--text)}
+.fm-rel{font-size:12px;color:var(--text2);margin-top:2px}
+.fm-btns{margin-left:auto;display:flex;gap:6px}
+.fm-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border)}
+.crem-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.crem-row:last-child{border-bottom:none}
 </style>
+
+<!-- Add / Edit Family Member Modal -->
+<div class="modal-overlay" id="family-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="fm-modal-title">Add family member</div>
+    <div class="modal-sub">Add a driver and their vehicle to your household fleet.</div>
+    <input type="hidden" id="fm-edit-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+      <div><label class="fl">Full name</label><input class="fi no-icon" id="fm-name" placeholder="e.g. Sarah Thompson"></div>
+      <div><label class="fl">Relationship</label><input class="fi no-icon" id="fm-rel" placeholder="e.g. Partner, Child"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+      <div><label class="fl">Vehicle registration</label><input class="fi no-icon" id="fm-rego" placeholder="e.g. XYZ123" style="text-transform:uppercase"></div>
+      <div><label class="fl">Vehicle (make/model)</label><input class="fi no-icon" id="fm-vehicle" placeholder="e.g. Toyota Camry"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+      <div><label class="fl">Mobile number</label><input class="fi no-icon" id="fm-phone" type="tel" placeholder="04xx xxx xxx"></div>
+      <div><label class="fl">Licence number</label><input class="fi no-icon" id="fm-lic" placeholder="VIC licence"></div>
+    </div>
+    <div style="margin-bottom:1rem"><label class="fl">Notes (optional)</label><input class="fi no-icon" id="fm-notes" placeholder="e.g. P2 licence, business vehicle"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveFamilyMember()"><i class="ti ti-check" aria-hidden="true"></i> Save member</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Family Member Confirm -->
+<div class="modal-overlay" id="family-del-modal">
+  <div class="modal-box">
+    <div class="modal-title">Remove this member?</div>
+    <div class="modal-sub">This removes them from your fleet view only. Their fines in the system are not affected.</div>
+    <input type="hidden" id="fm-del-id">
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="background:var(--red)" onclick="confirmDeleteFamilyMember()"><i class="ti ti-trash" aria-hidden="true"></i> Remove</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-del-modal')">Keep</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
@@ -1286,6 +1305,7 @@ function launch(u){
   document.getElementById('app-shell').style.display='flex';
   populateApp(u);
   restoreAllNotifications();
+  setTimeout(()=>{initReveal();initRipple();initMagnetic();initTilt();initCounters();},120);
 }
 function populateApp(u){
   const n=u.fname||u.name||'there';
@@ -1317,7 +1337,8 @@ function go(page){
   if(map[page]!==undefined&&nl[map[page]])nl[map[page]].classList.add('on');
   if(mmap[page]!==undefined&&ml[mmap[page]])ml[mmap[page]].classList.add('on');
   if(page==='fines')renderFines();
-  if(page==='reminders')renderReminders();
+  if(page==='reminders'){renderReminders();renderCustomReminders();}
+  if(page==='family')renderFamily();
   window.scrollTo(0,0);
 }
 
@@ -2057,6 +2078,175 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
 
+// ── FAMILY & FLEET ──────────────────────────────────────────
+function DFAMILY(){return[
+  {id:'fm1',name:'Alex Thompson',rel:'Primary Driver',rego:'ABC123',vehicle:'Toyota Camry',phone:'0400000001',lic:'',notes:'Main vehicle'},
+  {id:'fm2',name:'Sarah Thompson',rel:'Partner',rego:'XYZ987',vehicle:'Honda CRV',phone:'0400000002',lic:'',notes:''},
+  {id:'fm3',name:'Jamie Thompson',rel:'Child — P-plate',rego:'DEF456',vehicle:'Mazda 3',phone:'0400000003',lic:'',notes:'P2 licence'},
+];}
+function getFamilyMembers(){return S.g('family')||DFAMILY();}
+function saveFamilyMembers(f){S.s('family',f);}
+function fmInitials(name){const p=name.trim().split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+
+function renderFamily(){
+  const members=getFamilyMembers();
+  const fines=getFines();
+  const list=document.getElementById('family-members-list');
+  const strip=document.getElementById('family-stats-strip');
+  if(!list)return;
+  if(!members.length){
+    list.innerHTML='<div class="empty-state" style="padding:2rem"><i class="ti ti-users" aria-hidden="true"></i><div class="empty-title">No members yet</div><div class="empty-sub">Add family members and their vehicles to track fines together</div></div>';
+    if(strip)strip.innerHTML='';
+    return;
+  }
+  let totalFines=0,totalOwed=0;
+  list.innerHTML=members.map(m=>{
+    const mFines=fines.filter(f=>f.rego&&f.rego===m.rego&&f.status!=='paid');
+    totalFines+=mFines.length;
+    const owed=mFines.reduce((s,f)=>s+(f.totalAmount||f.amount),0);
+    totalOwed+=owed;
+    const status=mFines.length===0
+      ?'<span class="badge b-green"><i class="ti ti-check" aria-hidden="true"></i> Clear</span>'
+      :`<span class="badge b-red"><i class="ti ti-alert-triangle" aria-hidden="true"></i> ${mFines.length} fine${mFines.length>1?'s':''} · $${owed}</span>`;
+    return`<div class="fm-card" id="fmc-${m.id}">
+      <div class="fm-head">
+        <div class="fm-av">${fmInitials(m.name)}</div>
+        <div><div class="fm-name">${m.name}</div><div class="fm-rel">${m.rel}${m.notes?' · '+m.notes:''}</div></div>
+        <div class="fm-btns">
+          <button class="fc-btn fc-edit" onclick="openFamilyModal('${m.id}')"><i class="ti ti-edit" aria-hidden="true"></i> Edit</button>
+          <button class="fc-btn fc-del" onclick="askDeleteFamilyMember('${m.id}')"><i class="ti ti-trash" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="fm-foot">
+        ${m.rego?`<div class="plate">${m.rego}</div>`:''}
+        ${m.vehicle?`<span style="font-size:12px;color:var(--text2)">${m.vehicle}</span>`:''}
+        ${m.phone?`<span style="font-size:12px;color:var(--text3)"><i class="ti ti-phone" style="font-size:11px"></i> ${m.phone}</span>`:''}
+        ${status}
+      </div>
+    </div>`;
+  }).join('');
+  if(strip)strip.innerHTML=`<div class="stat-strip" style="margin-bottom:1rem">
+    <div class="stat-tile"><div class="st-label"><i class="ti ti-users" aria-hidden="true"></i> Members</div><div class="st-val c-blue">${members.length}</div></div>
+    <div class="stat-tile"><div class="st-label"><i class="ti ti-file-alert" aria-hidden="true"></i> Active fines</div><div class="st-val c-red">${totalFines}</div></div>
+    <div class="stat-tile"><div class="st-label"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Total owed</div><div class="st-val c-amber">$${totalOwed.toLocaleString()}</div></div>
+  </div>`;
+  setTimeout(()=>{initReveal();initTilt();},50);
+}
+
+function openFamilyModal(id){
+  document.getElementById('fm-edit-id').value=id||'';
+  document.getElementById('fm-modal-title').textContent=id?'Edit member':'Add family member';
+  if(id){
+    const m=getFamilyMembers().find(x=>x.id===id);
+    if(!m)return;
+    document.getElementById('fm-name').value=m.name||'';
+    document.getElementById('fm-rel').value=m.rel||'';
+    document.getElementById('fm-rego').value=m.rego||'';
+    document.getElementById('fm-vehicle').value=m.vehicle||'';
+    document.getElementById('fm-phone').value=m.phone||'';
+    document.getElementById('fm-lic').value=m.lic||'';
+    document.getElementById('fm-notes').value=m.notes||'';
+  } else {
+    ['fm-name','fm-rel','fm-rego','fm-vehicle','fm-phone','fm-lic','fm-notes'].forEach(i=>document.getElementById(i).value='');
+  }
+  document.getElementById('family-modal').classList.add('show');
+}
+
+function saveFamilyMember(){
+  const name=document.getElementById('fm-name').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  const editId=document.getElementById('fm-edit-id').value;
+  const member={
+    id:editId||'fm'+Date.now(),
+    name,
+    rel:document.getElementById('fm-rel').value.trim(),
+    rego:document.getElementById('fm-rego').value.trim().toUpperCase(),
+    vehicle:document.getElementById('fm-vehicle').value.trim(),
+    phone:document.getElementById('fm-phone').value.trim(),
+    lic:document.getElementById('fm-lic').value.trim(),
+    notes:document.getElementById('fm-notes').value.trim(),
+  };
+  const members=getFamilyMembers();
+  if(editId){const i=members.findIndex(m=>m.id===editId);if(i>=0)members[i]=member;else members.push(member);}
+  else members.push(member);
+  saveFamilyMembers(members);
+  closeModal('family-modal');
+  renderFamily();
+  showToast(editId?'Member updated':'Member added');
+}
+
+function askDeleteFamilyMember(id){
+  document.getElementById('fm-del-id').value=id;
+  document.getElementById('family-del-modal').classList.add('show');
+}
+function confirmDeleteFamilyMember(){
+  const id=document.getElementById('fm-del-id').value;
+  saveFamilyMembers(getFamilyMembers().filter(m=>m.id!==id));
+  closeModal('family-del-modal');
+  renderFamily();
+  showToast('Member removed');
+}
+
+// ── CUSTOM REMINDERS ────────────────────────────────────────
+function getCustomReminders(){return S.g('custom_reminders')||[];}
+function saveCustomReminders(r){S.s('custom_reminders',r);}
+
+function addCustomReminder(){
+  const note=document.getElementById('crem-note').value.trim();
+  const dt=document.getElementById('crem-dt').value;
+  if(!note||!dt){showToast('Please enter a note and date/time');return;}
+  const ms=new Date(dt).getTime()-Date.now();
+  if(ms<0){showToast('Please choose a future date and time');return;}
+  const rem={id:'cr'+Date.now(),note,dt,fired:false};
+  const rems=getCustomReminders();
+  rems.push(rem);
+  saveCustomReminders(rems);
+  document.getElementById('crem-note').value='';
+  document.getElementById('crem-dt').value='';
+  // Schedule push notification
+  if(Notification.permission==='granted'){
+    setTimeout(()=>{
+      new Notification('SmartFine Reminder',{body:note,tag:'cr-'+rem.id});
+      // Mark fired
+      const r=getCustomReminders();const i=r.findIndex(x=>x.id===rem.id);
+      if(i>=0){r[i].fired=true;saveCustomReminders(r);renderCustomReminders();}
+    },ms);
+  }
+  // Schedule email
+  const cfg=S.g('ejs');
+  if(cfg&&!cfg.demo&&ms>0){
+    setTimeout(()=>sendEmail(cfg.svc,cfg.tpl,cfg.key,cfg.email,{
+      to_email:cfg.email,subject:'⏰ SmartFine Reminder: '+note,
+      message:'Your SmartFine reminder: '+note+'\n\nScheduled for: '+new Date(dt).toLocaleString('en-AU'),
+      fine_id:'Reminder',fine_amount:'—',fine_due:new Date(dt).toLocaleDateString('en-AU'),days_remaining:'Custom reminder'
+    }),ms);
+  }
+  renderCustomReminders();
+  showToast('Reminder set for '+new Date(dt).toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'}));
+}
+
+function renderCustomReminders(){
+  const el=document.getElementById('custom-reminders-list');
+  if(!el)return;
+  const rems=getCustomReminders().filter(r=>!r.fired);
+  if(!rems.length){el.innerHTML='<p style="font-size:13px;color:var(--text3);text-align:center;padding:8px 0">No custom reminders set</p>';return;}
+  el.innerHTML=rems.map(r=>{
+    const d=new Date(r.dt);
+    const past=d<new Date();
+    return`<div class="crem-row">
+      <div class="rm-icon ${past?'red':'green'}"><i class="ti ti-clock" aria-hidden="true"></i></div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${r.note}</div><div style="font-size:12px;color:var(--text3)">${d.toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'})}</div></div>
+      <button class="fc-btn fc-del" onclick="deleteCustomReminder('${r.id}')"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function deleteCustomReminder(id){
+  saveCustomReminders(getCustomReminders().filter(r=>r.id!==id));
+  renderCustomReminders();
+  showToast('Reminder deleted');
+}
+
 /* ═══════════════════════════════════════════════════════════
    PREMIUM ANIMATION ENGINE
    ═══════════════════════════════════════════════════════════ */
@@ -2390,11 +2580,8 @@ new MutationObserver(()=>{
 
 // ── BOOT ─────────────────────────────────────────────────
 initParticles();
-initReveal();
 initRipple();
 initMagnetic();
-initTilt();
-initCounters();
 
 init();
 </script>
