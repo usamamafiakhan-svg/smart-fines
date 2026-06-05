@@ -485,6 +485,17 @@ a{text-decoration:none}
 }
 .ps{font-size:13px;color:var(--text3);margin-top:4px}
 
+/* ── Dashboard video banner ── */
+.dash-video-banner{position:relative;border-radius:var(--r-lg);overflow:hidden;margin-bottom:1rem;cursor:pointer;height:160px;box-shadow:var(--sh-md)}
+.dash-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.dash-vid-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,8,15,0.65) 0%,rgba(124,58,237,0.35) 50%,rgba(5,8,15,0.4) 100%);display:flex;align-items:center;padding:1.5rem}
+.dash-vid-content{display:flex;flex-direction:column;gap:6px}
+.dash-vid-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;text-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.dash-vid-sub{font-size:13px;color:rgba(255,255,255,0.8);text-shadow:0 1px 6px rgba(0,0,0,0.4)}
+.dash-vid-btn{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:7px 16px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);border-radius:99px;font-size:13px;font-weight:600;color:#fff;transition:all 0.2s}
+.dash-video-banner:hover .dash-vid-btn{background:rgba(255,255,255,0.25);transform:translateX(3px)}
+.dash-video-banner:hover{transform:translateY(-2px);box-shadow:var(--sh-lg)}
+
 /* ── Cards ── */
 .card{background:var(--surface);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:var(--r-lg);border:1px solid var(--border2);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,0.08);transition:all 0.3s var(--expo)}
 .card:hover{
@@ -1168,6 +1179,21 @@ a{text-decoration:none}
         <!-- DASHBOARD -->
         <div class="app-page" id="page-dashboard">
           <div class="ph"><div class="pt" id="dash-greet">Good morning, Alex</div><div class="ps">Your fine summary across all registered vehicles</div></div>
+
+          <!-- Video banner -->
+          <div class="dash-video-banner" onclick="go('scan')">
+            <video autoplay muted loop playsinline preload="auto" class="dash-vid">
+              <source src="hero2.mp4" type="video/mp4">
+            </video>
+            <div class="dash-vid-overlay">
+              <div class="dash-vid-content">
+                <div class="dash-vid-title">Got a fine?</div>
+                <div class="dash-vid-sub">Scan your infringement notice in seconds</div>
+                <span class="dash-vid-btn"><i class="ti ti-scan"></i> Scan now</span>
+              </div>
+            </div>
+          </div>
+
           <div class="stat-strip">
             <div class="stat-tile"><div class="st-label"><i class="ti ti-file-alert" aria-hidden="true"></i>Outstanding</div><div class="st-val c-red" id="s-cnt">2</div><div class="st-sub">active fines</div></div>
             <div class="stat-tile"><div class="st-label"><i class="ti ti-currency-dollar" aria-hidden="true"></i>Total owed</div><div class="st-val c-amber" id="s-tot">$1,250</div><div class="st-sub">incl. all fees</div></div>
