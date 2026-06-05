@@ -835,9 +835,10 @@ a{text-decoration:none}
 
 /* ── OTP BOXES ── */
 .otp-box{animation:sfScaleIn 0.38s var(--spring) both;transition:border-color 0.18s,box-shadow 0.18s,transform 0.2s var(--spring-soft)}
-.otp-box:nth-child(1){animation-delay:0.06s}.otp-box:nth-child(2){animation-delay:0.12s}
-.otp-box:nth-child(3){animation-delay:0.18s}.otp-box:nth-child(4){animation-delay:0.24s}
-.otp-box:nth-child(5){animation-delay:0.3s}.otp-box:nth-child(6){animation-delay:0.36s}
+.otp-box:nth-child(1){animation-delay:0.06s}.otp-box:nth-child(2){animation-delay:0.1s}
+.otp-box:nth-child(3){animation-delay:0.14s}.otp-box:nth-child(4){animation-delay:0.18s}
+.otp-box:nth-child(5){animation-delay:0.22s}.otp-box:nth-child(6){animation-delay:0.26s}
+.otp-box:nth-child(7){animation-delay:0.3s}.otp-box:nth-child(8){animation-delay:0.34s}
 .otp-box:focus{transform:scale(1.1) translateY(-3px);box-shadow:0 6px 20px rgba(79,156,249,0.2),0 0 0 3px rgba(79,156,249,0.18)!important}
 .otp-box.filled{box-shadow:0 0 14px rgba(245,200,66,0.32)}
 .otp-box.shake{animation:sfShake 0.45s ease!important;border-color:var(--red)!important}
@@ -1513,7 +1514,7 @@ a{text-decoration:none}
         <div class="auth-step" id="s-otp">
           <div class="step-dots"><div class="sdot done"></div><div class="sdot active"></div><div class="sdot"></div></div>
           <div class="auth-heading">Enter your code</div>
-          <div class="auth-sub">We sent a 6-digit code to <strong id="otp-dest"></strong>.</div>
+          <div class="auth-sub">We sent an 8-digit code to <strong id="otp-dest"></strong>.</div>
           <div class="info-banner info"><i class="ti ti-info-circle" aria-hidden="true"></i><span>Demo mode — use code: <strong id="demo-otp" style="font-family:var(--mono);margin-left:4px"></strong></span></div>
           <div class="otp-row" id="otp-row"></div>
           <button class="btn btn-primary" id="btn-verify" onclick="verifyOTP()" disabled>Verify <i class="ti ti-shield-check" aria-hidden="true"></i></button>
@@ -1959,6 +1960,7 @@ a{text-decoration:none}
 // ── SUPABASE + RESEND CONFIG ──────────────────────────────────
 const SUPA_URL='https://idzqppnomukukjwozlcx.supabase.co';
 const SUPA_KEY='sb_publishable_uDhWvdQhOMEBsow1P5UPdw_72RtVFNg';
+const OTP_LEN=8;
 const RESEND_KEY='re_Gqznpsib_KQNFKd1gQA1CZwu2rERCoaDY';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
@@ -2173,26 +2175,26 @@ async function sendOTP(){
 function startCountdown(){startCD();}
 function buildOTP(){
   const row=document.getElementById('otp-row');row.innerHTML='';
-  for(let i=0;i<6;i++){
+  for(let i=0;i<OTP_LEN;i++){
     const inp=document.createElement('input');
     inp.className='otp-box';inp.type='text';inp.maxLength=1;inp.inputMode='numeric';inp.id='ob'+i;
-    inp.oninput=function(){this.value=this.value.replace(/\D/g,'').slice(-1);if(this.value){this.classList.add('filled');if(i<5)document.getElementById('ob'+(i+1)).focus();}else{this.classList.remove('filled');}checkOTP();};
+    inp.oninput=function(){this.value=this.value.replace(/\D/g,'').slice(-1);if(this.value){this.classList.add('filled');if(i<OTP_LEN-1)document.getElementById('ob'+(i+1)).focus();}else{this.classList.remove('filled');}checkOTP();};
     inp.onkeydown=function(e){if(e.key==='Backspace'&&!this.value&&i>0)document.getElementById('ob'+(i-1)).focus();};
-    inp.onpaste=function(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);for(let j=0;j<t.length&&j<6;j++){const el=document.getElementById('ob'+j);el.value=t[j];el.classList.add('filled');}if(t.length===6){document.getElementById('ob5').focus();checkOTP();}};
+    inp.onpaste=function(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,OTP_LEN);for(let j=0;j<t.length&&j<OTP_LEN;j++){const el=document.getElementById('ob'+j);el.value=t[j];el.classList.add('filled');}if(t.length===OTP_LEN){document.getElementById('ob'+(OTP_LEN-1)).focus();checkOTP();}};
     row.appendChild(inp);
   }
   document.getElementById('ob0').focus();
 }
-function checkOTP(){const c=Array.from({length:6},(_,i)=>document.getElementById('ob'+i).value).join('');document.getElementById('btn-verify').disabled=c.length<6;}
+function checkOTP(){const c=Array.from({length:OTP_LEN},(_,i)=>document.getElementById('ob'+i).value).join('');document.getElementById('btn-verify').disabled=c.length<OTP_LEN;}
 async function verifyOTP(){
   const boxes=document.querySelectorAll('.otp-box');
   const code=[...boxes].map(b=>b.value).join('').trim();
-  if(code.length<6){showToast('Enter the 6-digit code');return;}
+  if(code.length<OTP_LEN){showToast('Enter the '+OTP_LEN+'-digit code');return;}
   const btn=document.getElementById('btn-verify');
   btn.disabled=true;btn.innerHTML='<div class="spin"></div> Verifying...';
   const{data,error}=await sb.auth.verifyOtp({email:authDest,token:code,type:'email'});
   if(error){
-    for(let i=0;i<6;i++){const el=document.getElementById('ob'+i);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);}
+    for(let i=0;i<OTP_LEN;i++){const el=document.getElementById('ob'+i);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);}
     showToast('Invalid or expired code — try again');btn.disabled=false;btn.innerHTML='Verify <i class="ti ti-shield-check" aria-hidden="true"></i>';return;
   }
   const user=data.user;
@@ -2210,7 +2212,7 @@ async function verifyOTP(){
 function startCD(){let s=30;const btn=document.getElementById('btn-resend');btn.disabled=true;document.getElementById('cd-timer').textContent='('+s+'s)';clearInterval(cdInt);cdInt=setInterval(()=>{s--;document.getElementById('cd-timer').textContent='('+s+'s)';if(s<=0){clearInterval(cdInt);btn.disabled=false;document.getElementById('cd-timer').textContent='';}},1000);}
 async function resendCode(){
   await sb.auth.signInWithOtp({email:authDest,options:{shouldCreateUser:true}});
-  for(let i=0;i<6;i++){const e=document.getElementById('ob'+i);e.value='';e.classList.remove('filled');}
+  for(let i=0;i<OTP_LEN;i++){const e=document.getElementById('ob'+i);e.value='';e.classList.remove('filled');}
   document.getElementById('ob0').focus();
   startCD();showToast('New code sent to '+authDest);
 }
