@@ -90,6 +90,8 @@
   --sh: 0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
   --sh-md: 0 4px 16px rgba(15,23,42,0.09), 0 2px 4px rgba(15,23,42,0.05);
   --sh-lg: 0 8px 32px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);
+  /* force inherited text color for all children */
+  color: #0f172a;
 }
 /* ── App-shell light mode overrides ── */
 #app-shell .sidebar{background:#0f0f1a;border-right:1px solid rgba(255,255,255,0.06)}
@@ -124,6 +126,19 @@
 #app-shell .upload-zone{background:var(--surface2);border:2px dashed var(--border2);border-radius:var(--r-lg);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all 0.3s}
 #app-shell .upload-zone:hover,#app-shell .upload-zone.drag-over{border-color:var(--purple);background:var(--purple-lt);box-shadow:0 0 30px var(--purple-glow)}
 #app-shell .rm-row{display:flex;align-items:center;gap:14px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;box-shadow:var(--sh);transition:all 0.2s}
+#app-shell .rm-title{color:#0f172a;font-weight:600}
+#app-shell .rm-meta{color:#64748b}
+#app-shell .rm-icon.blue{background:rgba(79,156,249,0.15);color:#2563eb}
+#app-shell .rm-icon.green{background:rgba(0,212,170,0.15);color:#059669}
+#app-shell .rm-icon.amber{background:rgba(245,200,66,0.18);color:#92620a}
+#app-shell .rm-icon.red{background:rgba(255,77,109,0.12);color:#dc2626}
+#app-shell .pf-row{border-bottom-color:var(--border)}
+#app-shell .pf-lbl{color:#64748b;font-size:13px}
+#app-shell .pf-val{color:#0f172a;font-weight:500}
+#app-shell .crem-row{background:#fff;border-color:var(--border)}
+#app-shell .stat-tile .st-label{color:#64748b;font-weight:600;font-size:12px}
+#app-shell .stat-tile .st-sub{color:#94a3b8;font-size:12px}
+#app-shell .stat-tile .st-val{color:#0f172a;font-weight:700}
 #app-shell .ocr-box{display:none;background:#fff;border:1px solid var(--border2);border-radius:var(--r-lg);padding:1.25rem;margin-top:1rem;box-shadow:var(--sh)}
 #app-shell .ex-field{background:var(--surface2);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--border)}
 #app-shell .ex-inp{background:transparent;border:none;font-size:14px;font-weight:500;color:var(--text);font-family:var(--mono);outline:none;padding:0;width:100%}
