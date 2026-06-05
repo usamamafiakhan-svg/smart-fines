@@ -95,65 +95,103 @@
   color: #e8edf5;
 }
 /* ── Sidebar — glass dark ── */
+/* ══ SIDEBAR ══ */
 #app-shell .sidebar{
-  background:rgba(5,8,15,0.75);
-  backdrop-filter:blur(30px) saturate(160%);
-  -webkit-backdrop-filter:blur(30px) saturate(160%);
-  border-right:1px solid rgba(255,255,255,0.07);
+  background:rgba(4,7,14,0.88);
+  backdrop-filter:blur(40px) saturate(180%);
+  -webkit-backdrop-filter:blur(40px) saturate(180%);
+  border-right:1px solid rgba(0,212,170,0.12);
+  box-shadow:4px 0 30px rgba(0,0,0,0.5);
 }
-#app-shell .sb-logo{background:linear-gradient(135deg,var(--teal),var(--cyan));box-shadow:0 0 22px rgba(0,212,170,0.4)}
-#app-shell .sb-name{color:#fff;font-weight:700}
-#app-shell .sb-sub{color:var(--teal)}
-#app-shell .sb-section{color:rgba(255,255,255,0.35);font-weight:700;letter-spacing:0.12em;font-size:10px}
-#app-shell .nav-lnk{color:rgba(232,237,245,0.65)}
-#app-shell .nav-lnk:hover{background:rgba(0,212,170,0.1);color:rgba(0,212,170,0.9)}
+#app-shell .sb-logo{
+  background:linear-gradient(135deg,var(--teal),var(--cyan));
+  box-shadow:0 0 24px rgba(0,212,170,0.45);
+  font-size:18px;
+}
+#app-shell .sb-name{color:#fff;font-weight:700;font-size:15px;letter-spacing:-0.2px}
+#app-shell .sb-sub{color:var(--teal);font-size:11px}
+#app-shell .sb-section{
+  color:rgba(0,212,170,0.5);font-weight:700;letter-spacing:0.14em;font-size:9px;
+  padding:14px 14px 5px;text-transform:uppercase;
+}
+#app-shell .nav-lnk{
+  color:rgba(232,237,245,0.6);
+  border-radius:10px;
+  font-size:13px;
+  padding:10px 14px;
+  margin-bottom:2px;
+  border-left:2px solid transparent;
+}
+#app-shell .nav-lnk:hover{
+  background:rgba(0,212,170,0.08);
+  color:#e8edf5;
+  border-left-color:rgba(0,212,170,0.4);
+}
 #app-shell .nav-lnk.on{
-  background:linear-gradient(135deg,rgba(0,212,170,0.18),rgba(6,182,212,0.1));
+  background:linear-gradient(135deg,rgba(0,212,170,0.15),rgba(6,182,212,0.08));
   color:var(--teal);font-weight:600;
   border-left:2px solid var(--teal);
-  box-shadow:inset 0 0 20px rgba(0,212,170,0.06);
+  box-shadow:0 0 20px rgba(0,212,170,0.08);
 }
-#app-shell .nav-lnk.on i{color:var(--teal)}
-#app-shell .av-name{color:#fff;font-weight:600}
-#app-shell .av-email{color:rgba(255,255,255,0.5)}
-#app-shell .sb-logout{color:rgba(255,255,255,0.5)}
-#app-shell .sb-logout:hover{background:rgba(255,77,109,0.12);color:#ff8fa3}
-#app-shell .sb-user{border-top:1px solid rgba(255,255,255,0.07)}
-#app-shell .sb-user-row:hover{background:rgba(255,255,255,0.06)}
-#app-shell .avatar{background:linear-gradient(135deg,var(--teal),var(--cyan));box-shadow:0 0 16px rgba(0,212,170,0.35)}
-/* ── Cards — dark glass matching landing page ── */
+#app-shell .nav-lnk i{font-size:16px;opacity:0.85}
+#app-shell .nav-lnk.on i{opacity:1;color:var(--teal)}
+#app-shell .avatar{
+  background:linear-gradient(135deg,var(--teal),var(--cyan));
+  box-shadow:0 0 16px rgba(0,212,170,0.4);
+  font-size:11px;font-weight:700;
+}
+#app-shell .av-name{color:#fff;font-weight:600;font-size:13px}
+#app-shell .av-email{color:rgba(232,237,245,0.45);font-size:11px}
+#app-shell .sb-user-row:hover{background:rgba(255,255,255,0.05);border-radius:10px}
+#app-shell .sb-logout{
+  color:rgba(232,237,245,0.45);font-size:12px;
+  border-radius:8px;padding:8px 12px;
+  margin-top:4px;
+}
+#app-shell .sb-logout:hover{background:rgba(255,77,109,0.14);color:#ff8fa3}
+/* ══ CARDS — dark glass ══ */
 #app-shell .card{
-  background:rgba(8,12,23,0.68);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:var(--r-lg);
-  padding:1.25rem 1.5rem;margin-bottom:1rem;
-  backdrop-filter:blur(24px) saturate(150%);
-  -webkit-backdrop-filter:blur(24px) saturate(150%);
-  box-shadow:0 4px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);
-  transition:all 0.35s var(--expo);
+  background:rgba(6,10,20,0.82) !important;
+  border:1px solid rgba(255,255,255,0.12) !important;
+  border-radius:var(--r-lg) !important;
+  padding:1.25rem 1.5rem !important;
+  margin-bottom:1rem !important;
+  backdrop-filter:blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(160%) !important;
+  box-shadow:0 4px 32px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07) !important;
+  transition:all 0.35s var(--expo) !important;
+  color:#e8edf5 !important;
 }
 #app-shell .card:hover{
-  border-color:rgba(0,212,170,0.2);
-  box-shadow:0 8px 44px rgba(0,0,0,0.55),0 0 40px rgba(0,212,170,0.06),inset 0 1px 0 rgba(255,255,255,0.08);
-  transform:translateY(-2px);
+  border-color:rgba(0,212,170,0.25) !important;
+  box-shadow:0 8px 48px rgba(0,0,0,0.65),0 0 40px rgba(0,212,170,0.08),inset 0 1px 0 rgba(255,255,255,0.09) !important;
+  transform:translateY(-2px) !important;
 }
-#app-shell .card-lbl{color:rgba(232,237,245,0.45);font-weight:700;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
-#app-shell .card-act{color:var(--teal)}
-#app-shell .card-act:hover{color:var(--cyan)}
+#app-shell .card-lbl{color:rgba(0,212,170,0.7) !important;font-weight:700;font-size:10px;letter-spacing:0.12em;text-transform:uppercase}
+#app-shell .card-act{color:var(--teal) !important;font-weight:600}
+#app-shell .card-act:hover{color:var(--cyan) !important}
 /* ── Fine cards ── */
 #app-shell .fine-card{
-  background:rgba(8,12,23,0.65);
-  border:1px solid rgba(255,255,255,0.1);
-  border-left:3px solid transparent;
-  border-radius:var(--r-lg);padding:1.1rem 1.25rem;margin-bottom:10px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  box-shadow:0 2px 20px rgba(0,0,0,0.4);
-  transition:all 0.3s var(--expo);
+  background:rgba(6,10,20,0.8) !important;
+  border:1px solid rgba(255,255,255,0.11) !important;
+  border-left:3px solid transparent !important;
+  backdrop-filter:blur(24px) !important;-webkit-backdrop-filter:blur(24px) !important;
+  box-shadow:0 2px 22px rgba(0,0,0,0.5) !important;
+  color:#e8edf5 !important;
 }
-#app-shell .fine-card:hover{transform:translateY(-2px);border-color:rgba(0,212,170,0.2);box-shadow:0 8px 34px rgba(0,0,0,0.5),0 0 24px rgba(0,212,170,0.06)}
-#app-shell .fine-card[data-status="overdue"]{border-left-color:var(--red)}
-#app-shell .fine-card[data-status="pending"]{border-left-color:var(--gold)}
-#app-shell .fine-card[data-status="paid"]{border-left-color:var(--teal)}
+#app-shell .fine-card:hover{
+  border-color:rgba(0,212,170,0.25) !important;
+  box-shadow:0 8px 36px rgba(0,0,0,0.6),0 0 24px rgba(0,212,170,0.07) !important;
+}
+#app-shell .fine-card[data-status="overdue"]{border-left-color:var(--red) !important}
+#app-shell .fine-card[data-status="pending"]{border-left-color:var(--gold) !important}
+#app-shell .fine-card[data-status="paid"]{border-left-color:var(--teal) !important}
+/* ── Fine card text ── */
+#app-shell .fine-type{color:#e8edf5 !important}
+#app-shell .fine-id{color:rgba(232,237,245,0.45) !important}
+#app-shell .fine-meta{color:rgba(232,237,245,0.55) !important}
+#app-shell .fine-amount{color:var(--red) !important}
+#app-shell .fine-base{color:rgba(232,237,245,0.4) !important}
 /* ── Stat tiles (other pages) ── */
 #app-shell .stat-tile{background:rgba(8,12,23,0.65);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(20px)}
 #app-shell .stat-tile:hover{border-color:rgba(0,212,170,0.22);box-shadow:0 0 30px rgba(0,212,170,0.08)}
@@ -220,6 +258,40 @@
 #app-shell .info-banner{background:rgba(79,156,249,0.1);border:1px solid rgba(79,156,249,0.22);color:rgba(147,197,253,0.9)}
 #app-shell .notice-banner{background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2)}
 #app-shell .toast{bottom:88px;background:rgba(8,12,23,0.95);border:1px solid rgba(0,212,170,0.25);color:#e8edf5}
+/* ══ GLOBAL TEXT READABILITY inside app-shell ══ */
+#app-shell *{color:inherit}
+#app-shell .card,.app-shell .fine-card{color:#e8edf5 !important}
+#app-shell p,#app-shell span,#app-shell div,#app-shell label{color:inherit}
+/* all headings inside cards: bright white */
+#app-shell h1,#app-shell h2,#app-shell h3,#app-shell h4{color:#e8edf5}
+/* profile / reminder label–value pairs */
+#app-shell .pf-key{color:rgba(232,237,245,0.55) !important}
+#app-shell .pf-val{color:#e8edf5 !important}
+#app-shell .pf-lbl{color:rgba(232,237,245,0.55) !important}
+/* reminder row text */
+#app-shell .rm-title{color:#e8edf5 !important;font-weight:600}
+#app-shell .rm-meta{color:rgba(232,237,245,0.55) !important}
+/* vehicle / family rows */
+#app-shell .veh-name{color:#e8edf5 !important}
+#app-shell .veh-sub{color:rgba(232,237,245,0.55) !important}
+/* demerit section */
+#app-shell .dem-labels{color:rgba(232,237,245,0.45)}
+/* modal text */
+#app-shell .modal-box{background:rgba(6,10,20,0.95) !important;border:1px solid rgba(255,255,255,0.12) !important;backdrop-filter:blur(40px) !important;color:#e8edf5 !important}
+#app-shell .modal-title{color:#e8edf5 !important}
+#app-shell .modal-sub{color:rgba(232,237,245,0.6) !important}
+/* fm-cards (family) */
+#app-shell .fm-card{background:rgba(6,10,20,0.8) !important;border-color:rgba(255,255,255,0.11) !important;backdrop-filter:blur(20px) !important;color:#e8edf5 !important}
+/* crem rows */
+#app-shell .crem-row{background:rgba(255,255,255,0.05) !important;border-color:rgba(255,255,255,0.09) !important;color:#e8edf5 !important}
+/* form labels stronger */
+#app-shell .fl{color:rgba(232,237,245,0.75) !important;font-weight:600}
+/* select dropdowns */
+#app-shell select.fi{background:rgba(6,10,20,0.9);color:#e8edf5}
+#app-shell select.fi option{background:#0d1525;color:#e8edf5}
+/* ex-key labels in OCR grid */
+#app-shell .ex-key{color:rgba(232,237,245,0.5) !important}
+#app-shell .ex-inp{color:#e8edf5 !important}
 .grad-text{
   background:linear-gradient(135deg,#a78bfa 0%,#60a5fa 40%,#34d399 100%);
   -webkit-background-clip:text;
@@ -498,23 +570,9 @@ a{text-decoration:none}
     linear-gradient(to right,rgba(5,8,15,0.82) 0%,rgba(5,8,15,0.5) 100%),
     linear-gradient(to bottom,rgba(5,8,15,0.3) 0%,rgba(5,8,15,0.15) 50%,rgba(5,8,15,0.4) 100%);
 }
-/* sidebar sits above video */
+/* sidebar + mobile nav sit above video */
 .sidebar{z-index:101 !important}
 .mob-nav{z-index:201 !important}
-/* cards get slight glass effect over video */
-#app-shell .card{
-  background:rgba(255,255,255,0.88) !important;
-  backdrop-filter:blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter:blur(16px) saturate(160%) !important;
-}
-#app-shell .fine-card{
-  background:rgba(255,255,255,0.88) !important;
-  backdrop-filter:blur(16px) !important;
-  -webkit-backdrop-filter:blur(16px) !important;
-}
-#app-shell .modal-box{
-  background:rgba(255,255,255,0.96) !important;
-}
 
 /* Mobile nav */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(5,8,15,0.85);backdrop-filter:blur(30px) saturate(180%);border-top:1px solid var(--border);z-index:200;padding:6px 0 max(env(safe-area-inset-bottom,8px),8px)}
