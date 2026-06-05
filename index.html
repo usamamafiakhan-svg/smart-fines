@@ -191,8 +191,8 @@
 #app-shell .fl{color:#475569;font-weight:600}
 #app-shell .fi::placeholder{color:#94a3b8}
 #app-shell .fi-wrap i{color:#94a3b8}
-/* attractive light main bg with subtle mesh */
-#app-shell .main{background:linear-gradient(160deg,#f0f4ff 0%,#faf5ff 35%,#f0fdfa 65%,#eff6ff 100%)}
+/* Main area — light with very subtle tint */
+#app-shell .main{background:linear-gradient(175deg,#f4f7ff 0%,#f8faff 40%,#f2fdf9 70%,#f0f6ff 100%)}
 /* ensure page title gradient works on light bg */
 #app-shell .pt{background:linear-gradient(135deg,#1e1b4b 0%,#7c3aed 55%,#2563eb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 /* card-lbl visible on light */
@@ -486,16 +486,143 @@ a{text-decoration:none}
 }
 .ps{font-size:13px;color:var(--text3);margin-top:4px}
 
+/* ── Dashboard hero ── */
+.dash-hero{
+  background:linear-gradient(150deg,#070c18 0%,#0d1525 55%,#081320 100%);
+  margin:-2rem -2rem 1.5rem;
+  padding:2rem 1.5rem 0;
+  position:relative;overflow:hidden;
+}
+.dash-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 90% at -5% -10%,rgba(0,212,170,0.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 105% 110%,rgba(79,156,249,0.12) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 50% at 55% 5%,rgba(124,58,237,0.08) 0%,transparent 60%);
+}
+.dash-hero-top{
+  position:relative;z-index:1;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:1rem;margin-bottom:1.75rem;flex-wrap:wrap;
+}
+.dash-hero-greet{
+  font-size:clamp(20px,3.5vw,32px);font-weight:800;
+  letter-spacing:-1px;line-height:1.1;
+  background:linear-gradient(135deg,#fff 0%,var(--teal) 55%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.dash-hero-sub{font-size:13px;color:rgba(232,237,245,0.48);margin-top:5px}
+.dash-hero-tiles{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:rgba(255,255,255,0.06);
+  border-top:1px solid rgba(255,255,255,0.07);
+  margin:0 -1.5rem;
+}
+.dht{
+  padding:1.25rem 1.5rem 1.5rem;
+  position:relative;border-right:1px solid rgba(255,255,255,0.06);
+  transition:background 0.3s;
+}
+.dht:last-child{border-right:none}
+.dht:hover{background:rgba(255,255,255,0.04)}
+.dht::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.dht-red::before{background:linear-gradient(90deg,transparent,#ff4d6d,transparent)}
+.dht-amber::before{background:linear-gradient(90deg,transparent,#f5c842,transparent)}
+.dht-blue::before{background:linear-gradient(90deg,transparent,#4f9cf9,transparent)}
+.dht-teal::before{background:linear-gradient(90deg,transparent,#00d4aa,transparent)}
+.dht-icon{
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;margin-bottom:10px;
+}
+.dht-red .dht-icon{background:rgba(255,77,109,0.15);color:#ff4d6d}
+.dht-amber .dht-icon{background:rgba(245,200,66,0.15);color:#f5c842}
+.dht-blue .dht-icon{background:rgba(79,156,249,0.15);color:#4f9cf9}
+.dht-teal .dht-icon{background:rgba(0,212,170,0.15);color:#00d4aa}
+.dht-label{font-size:10px;font-weight:700;color:rgba(232,237,245,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.dht-val{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1.05}
+.dht-red .dht-val{color:#ff4d6d}
+.dht-amber .dht-val{color:#f5c842}
+.dht-blue .dht-val{color:#4f9cf9}
+.dht-teal .dht-val{color:#00d4aa}
+.dht-sub{font-size:11px;color:rgba(232,237,245,0.35);margin-top:3px}
+@media(max-width:600px){
+  .dash-hero-tiles{grid-template-columns:1fr 1fr}
+  .dht{border-bottom:1px solid rgba(255,255,255,0.06)}
+}
+
 /* ── Dashboard video banner ── */
-.dash-video-banner{position:relative;border-radius:var(--r-lg);overflow:hidden;margin-bottom:1rem;cursor:pointer;height:160px;box-shadow:var(--sh-md)}
+.dash-video-banner{
+  position:relative;border-radius:var(--r-xl);overflow:hidden;
+  margin-bottom:1.25rem;cursor:pointer;height:210px;
+  box-shadow:var(--sh-lg),0 0 50px rgba(0,212,170,0.08);
+  transition:all 0.38s var(--spring-soft);
+}
+.dash-video-banner:hover{transform:translateY(-4px);box-shadow:var(--sh-lg),0 0 80px rgba(0,212,170,0.18)}
 .dash-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-.dash-vid-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,8,15,0.65) 0%,rgba(124,58,237,0.35) 50%,rgba(5,8,15,0.4) 100%);display:flex;align-items:center;padding:1.5rem}
-.dash-vid-content{display:flex;flex-direction:column;gap:6px}
-.dash-vid-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;text-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.dash-vid-sub{font-size:13px;color:rgba(255,255,255,0.8);text-shadow:0 1px 6px rgba(0,0,0,0.4)}
-.dash-vid-btn{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:7px 16px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);border-radius:99px;font-size:13px;font-weight:600;color:#fff;transition:all 0.2s}
-.dash-video-banner:hover .dash-vid-btn{background:rgba(255,255,255,0.25);transform:translateX(3px)}
-.dash-video-banner:hover{transform:translateY(-2px);box-shadow:var(--sh-lg)}
+.dash-vid-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,5,15,0.78) 0%,rgba(0,60,50,0.32) 55%,rgba(0,5,15,0.55) 100%);
+  display:flex;align-items:center;padding:2rem;
+}
+.dash-vid-content{display:flex;flex-direction:column;gap:5px}
+.dash-vid-badge{font-size:10px;font-weight:700;color:rgba(0,212,170,0.85);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px}
+.dash-vid-title{font-size:27px;font-weight:800;color:#fff;letter-spacing:-0.8px;text-shadow:0 2px 20px rgba(0,0,0,0.6)}
+.dash-vid-sub{font-size:13px;color:rgba(255,255,255,0.7);text-shadow:0 1px 8px rgba(0,0,0,0.5);margin-bottom:10px}
+.dash-vid-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 20px;width:fit-content;
+  background:linear-gradient(135deg,var(--teal),var(--cyan));
+  border:none;border-radius:99px;font-size:13px;font-weight:700;color:#000;
+  font-family:var(--font);cursor:pointer;
+  box-shadow:0 0 28px rgba(0,212,170,0.45);
+  transition:all 0.28s var(--spring-soft);
+}
+.dash-video-banner:hover .dash-vid-btn{transform:translateY(-2px) scale(1.05);box-shadow:0 0 50px rgba(0,212,170,0.65)}
+
+/* ── Quick action cards ── */
+.qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.qa-card{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  gap:10px;padding:1.5rem 1rem 1.25rem;
+  background:#fff;border:1px solid var(--border2);border-radius:var(--r-lg);
+  cursor:pointer;font-family:var(--font);
+  transition:all 0.35s var(--spring-soft);
+  box-shadow:var(--sh);position:relative;overflow:hidden;
+}
+.qa-card::after{
+  content:'';position:absolute;inset:0;opacity:0;
+  transition:opacity 0.3s;border-radius:inherit;
+}
+.qa-scan::after{background:linear-gradient(135deg,rgba(0,212,170,0.05),rgba(6,182,212,0.03))}
+.qa-pay::after{background:linear-gradient(135deg,rgba(245,200,66,0.07),rgba(245,200,66,0.03))}
+.qa-remind::after{background:linear-gradient(135deg,rgba(124,58,237,0.05),rgba(79,156,249,0.03))}
+.qa-family::after{background:linear-gradient(135deg,rgba(79,156,249,0.06),rgba(124,58,237,0.04))}
+.qa-card:hover::after{opacity:1}
+.qa-card:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--sh-md),0 0 30px rgba(0,0,0,0.08);
+}
+.qa-scan:hover{border-color:rgba(0,212,170,0.3)}
+.qa-pay:hover{border-color:rgba(245,200,66,0.35)}
+.qa-remind:hover{border-color:rgba(124,58,237,0.3)}
+.qa-family:hover{border-color:rgba(79,156,249,0.3)}
+.qa-ico{
+  width:52px;height:52px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;transition:transform 0.32s var(--spring-soft);
+  position:relative;z-index:1;
+}
+.qa-card:hover .qa-ico{transform:scale(1.16) rotate(-5deg)}
+.qa-scan .qa-ico{background:linear-gradient(135deg,rgba(0,212,170,0.14),rgba(6,182,212,0.08));color:var(--teal)}
+.qa-pay .qa-ico{background:linear-gradient(135deg,rgba(245,200,66,0.16),rgba(245,200,66,0.07));color:var(--gold)}
+.qa-remind .qa-ico{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(79,156,249,0.07));color:#a78bfa}
+.qa-family .qa-ico{background:linear-gradient(135deg,rgba(79,156,249,0.12),rgba(124,58,237,0.07));color:var(--blue)}
+.qa-lbl{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-0.2px;position:relative;z-index:1}
+.qa-desc{font-size:11px;color:var(--text2);font-weight:400;line-height:1.4;position:relative;z-index:1}
 
 /* ── Cards ── */
 .card{background:var(--surface);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:var(--r-lg);border:1px solid var(--border2);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,0.08);transition:all 0.3s var(--expo)}
@@ -509,7 +636,7 @@ a{text-decoration:none}
 .card-act{font-size:13px;color:var(--blue);cursor:pointer;font-weight:500;background:none;border:none;font-family:var(--font)}
 .card-act:hover{color:var(--teal)}
 
-/* Stat strip */
+/* Stat strip (kept for other pages) */
 .stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
 .stat-tile{background:var(--surface2);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r);padding:1.1rem 1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);transition:all 0.3s var(--expo)}
 .stat-tile:hover{
@@ -1598,38 +1725,90 @@ a{text-decoration:none}
 
         <!-- DASHBOARD -->
         <div class="app-page" id="page-dashboard">
-          <div class="ph"><div class="pt" id="dash-greet">Good morning, Alex</div><div class="ps">Your fine summary across all registered vehicles</div></div>
 
-          <!-- Video banner -->
+          <!-- ── Dark hero header with stats ── -->
+          <div class="dash-hero">
+            <div class="dash-hero-top">
+              <div>
+                <div class="dash-hero-greet" id="dash-greet">Good morning, Alex</div>
+                <div class="dash-hero-sub">Your fine summary across all registered vehicles</div>
+              </div>
+            </div>
+            <div class="dash-hero-tiles">
+              <div class="dht dht-red">
+                <div class="dht-icon"><i class="ti ti-file-alert"></i></div>
+                <div class="dht-label">Outstanding</div>
+                <div class="dht-val" id="s-cnt">—</div>
+                <div class="dht-sub">active fines</div>
+              </div>
+              <div class="dht dht-amber">
+                <div class="dht-icon"><i class="ti ti-currency-dollar"></i></div>
+                <div class="dht-label">Total owed</div>
+                <div class="dht-val" id="s-tot">—</div>
+                <div class="dht-sub">incl. all fees</div>
+              </div>
+              <div class="dht dht-blue">
+                <div class="dht-icon"><i class="ti ti-award"></i></div>
+                <div class="dht-label">Demerit pts</div>
+                <div class="dht-val" id="s-dem">—</div>
+                <div class="dht-sub">current balance</div>
+              </div>
+              <div class="dht dht-teal">
+                <div class="dht-icon"><i class="ti ti-calendar-due"></i></div>
+                <div class="dht-label">Next due</div>
+                <div class="dht-val" id="s-due">—</div>
+                <div class="dht-sub" id="s-due-lbl">No upcoming</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Cinematic video banner ── -->
           <div class="dash-video-banner" onclick="go('scan')">
             <video autoplay muted loop playsinline preload="auto" class="dash-vid">
               <source src="hero2.mp4" type="video/mp4">
             </video>
             <div class="dash-vid-overlay">
               <div class="dash-vid-content">
-                <div class="dash-vid-title">Got a fine?</div>
-                <div class="dash-vid-sub">Scan your infringement notice in seconds</div>
-                <span class="dash-vid-btn"><i class="ti ti-scan"></i> Scan now</span>
+                <div class="dash-vid-badge">New fine?</div>
+                <div class="dash-vid-title">Scan in seconds</div>
+                <div class="dash-vid-sub">OCR reads your notice automatically — no typing needed</div>
+                <button class="dash-vid-btn"><i class="ti ti-scan"></i> Scan now</button>
               </div>
             </div>
           </div>
 
-          <div class="stat-strip">
-            <div class="stat-tile"><div class="st-label"><i class="ti ti-file-alert" aria-hidden="true"></i>Outstanding</div><div class="st-val c-red" id="s-cnt">2</div><div class="st-sub">active fines</div></div>
-            <div class="stat-tile"><div class="st-label"><i class="ti ti-currency-dollar" aria-hidden="true"></i>Total owed</div><div class="st-val c-amber" id="s-tot">$1,250</div><div class="st-sub">incl. all fees</div></div>
-            <div class="stat-tile"><div class="st-label"><i class="ti ti-award" aria-hidden="true"></i>Demerit pts</div><div class="st-val c-blue" id="s-dem">5 / 12</div><div class="st-sub">current balance</div></div>
-            <div class="stat-tile"><div class="st-label"><i class="ti ti-calendar-due" aria-hidden="true"></i>Next due</div><div class="st-val c-amber" id="s-due">—</div><div class="st-sub" id="s-due-lbl">No upcoming fines</div></div>
-          </div>
-          <div class="card"><div class="card-hd"><div class="card-lbl">⚠ Urgent — act now</div><button class="card-act" onclick="go('fines')">View all</button></div><div id="dash-urgent"></div></div>
+          <!-- ── Quick actions ── -->
           <div class="card">
-            <div class="card-hd"><div class="card-lbl">Quick actions</div></div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
-              <button class="qa-btn" onclick="go('scan')"><i class="ti ti-scan c-gold" aria-hidden="true"></i><span>Scan notice</span></button>
-              <button class="qa-btn" onclick="openPayment()"><i class="ti ti-credit-card c-blue" aria-hidden="true"></i><span>Pay fine</span></button>
-              <button class="qa-btn" onclick="go('reminders')"><i class="ti ti-bell c-amber" aria-hidden="true"></i><span>Reminders</span></button>
-              <button class="qa-btn" onclick="go('family')"><i class="ti ti-users c-green" aria-hidden="true"></i><span>Family</span></button>
+            <div class="card-hd">
+              <div class="card-lbl">Quick actions</div>
+            </div>
+            <div class="qa-grid">
+              <button class="qa-card qa-scan" onclick="go('scan')">
+                <div class="qa-ico"><i class="ti ti-scan"></i></div>
+                <div class="qa-lbl">Scan Notice</div>
+                <div class="qa-desc">OCR auto-reads your fine</div>
+              </button>
+              <button class="qa-card qa-pay" onclick="openPayment()">
+                <div class="qa-ico"><i class="ti ti-credit-card"></i></div>
+                <div class="qa-lbl">Pay Fine</div>
+                <div class="qa-desc">Go to payment portal</div>
+              </button>
+              <button class="qa-card qa-remind" onclick="go('reminders')">
+                <div class="qa-ico"><i class="ti ti-bell"></i></div>
+                <div class="qa-lbl">Reminders</div>
+                <div class="qa-desc">Manage due-date alerts</div>
+              </button>
+              <button class="qa-card qa-family" onclick="go('family')">
+                <div class="qa-ico"><i class="ti ti-users"></i></div>
+                <div class="qa-lbl">Family &amp; Fleet</div>
+                <div class="qa-desc">Drivers &amp; vehicles</div>
+              </button>
             </div>
           </div>
+
+          <!-- ── Urgent fines ── -->
+          <div class="card"><div class="card-hd"><div class="card-lbl">⚠ Urgent — act now</div><button class="card-act" onclick="go('fines')">View all →</button></div><div id="dash-urgent"></div></div>
+
         </div>
 
         <!-- SCAN -->
