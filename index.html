@@ -657,13 +657,13 @@ a{text-decoration:none}
 .dht-amber .dht-icon{background:rgba(245,200,66,0.15);color:#f5c842}
 .dht-blue .dht-icon{background:rgba(79,156,249,0.15);color:#4f9cf9}
 .dht-teal .dht-icon{background:rgba(0,212,170,0.15);color:#00d4aa}
-.dht-label{font-size:10px;font-weight:700;color:rgba(232,237,245,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
-.dht-val{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1.05}
+.dht-label{font-size:11px;font-weight:700;color:rgba(232,237,245,0.55);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.dht-val{font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1.05}
 .dht-red .dht-val{color:#ff4d6d}
 .dht-amber .dht-val{color:#f5c842}
 .dht-blue .dht-val{color:#4f9cf9}
 .dht-teal .dht-val{color:#00d4aa}
-.dht-sub{font-size:11px;color:rgba(232,237,245,0.35);margin-top:3px}
+.dht-sub{font-size:12px;font-weight:500;color:rgba(232,237,245,0.5);margin-top:3px}
 @media(max-width:600px){
   .dash-hero-tiles{grid-template-columns:1fr 1fr}
   .dht{border-bottom:1px solid rgba(255,255,255,0.06)}
@@ -782,7 +782,7 @@ a{text-decoration:none}
 .fine-card[data-status="paid"]{border-left:3px solid var(--teal)}
 .fine-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .fine-id{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
-.fine-type{font-size:14px;font-weight:500;color:var(--text);line-height:1.4}
+.fine-type{font-size:14px;font-weight:700;color:var(--text);line-height:1.4}
 .fine-meta{font-size:12px;color:var(--text2);margin-top:3px}
 .fine-right{text-align:right;flex-shrink:0}
 .fine-amount{font-size:20px;font-weight:600;color:var(--red);text-shadow:0 0 15px rgba(255,77,109,0.3)}
@@ -819,7 +819,7 @@ a{text-decoration:none}
 .rm-icon.green{background:var(--teal-lt);color:var(--teal)}
 .rm-icon.blue{background:var(--blue-lt);color:var(--blue)}
 .rm-body{flex:1}
-.rm-title{font-size:14px;font-weight:500}
+.rm-title{font-size:14px;font-weight:700}
 .rm-meta{font-size:12px;color:var(--text2);margin-top:2px}
 
 /* Toggle */
@@ -2671,7 +2671,7 @@ function renderDash(){
   const dem=fines.filter(f=>f.status!=='paid').reduce((s,f)=>s+(f.demerit||0),0);
   document.getElementById('s-dem').textContent=dem+' / 12';
   const dueFines=out.filter(f=>f.due).sort((a,b)=>new Date(a.due)-new Date(b.due));
-  if(dueFines.length){const nxt=dueFines[0];const days=Math.ceil((new Date(nxt.due)-new Date())/(864e5));document.getElementById('s-due').textContent=days>0?days+' days':'Today!';document.getElementById('s-due-lbl').textContent=nxt.due;}
+  if(dueFines.length){const nxt=dueFines[0];const today=new Date();today.setHours(0,0,0,0);const dueDate=new Date(nxt.due);dueDate.setHours(0,0,0,0);const days=Math.round((dueDate-today)/(864e5));document.getElementById('s-due').textContent=days<0?'Overdue':days===0?'Due Today':days===1?'Tomorrow':days+' days';document.getElementById('s-due-lbl').textContent=new Date(nxt.due).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
   updateDemBar();
 }
 function renderReminders(){
@@ -3324,7 +3324,7 @@ function confirmFine(){
   const fines=getFines();
   if(fines.find(f=>f.id===infNum)){showToast('This fine is already in your dashboard');return;}
   const nf={id:infNum,type:off,amount:base,totalAmount:total,location:loc+(odate?' · '+odate:''),date:odate||new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}),due,demerit:dem,status:'pending',rego};
-  fines.unshift(nf);saveFines(fines);renderDash();renderReminders();renderDemerits();schedulePush(nf);
+  fines.unshift(nf);saveFines(fines);renderDash();renderReminders();renderDemerits();schedulePush(nf);go('dashboard');showToast('Fine saved to dashboard!');
   showToast('Fine saved to your dashboard');
   setTimeout(()=>go('fines'),900);resetScan();
 }
