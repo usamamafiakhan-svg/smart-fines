@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   /* Core palette */
@@ -1542,14 +1543,84 @@ a{text-decoration:none}
 <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
 <script>
+// ── SUPABASE + RESEND CONFIG ──────────────────────────────────
+const SUPA_URL='https://idzqppnomukukjwozlcx.supabase.co';
+const SUPA_KEY='sb_publishable_uDhWvdQhOMEBsow1P5UPdw_72RtVFNg';
+const RESEND_KEY='re_Gqznpsib_KQNFKd1gQA1CZwu2rERCoaDY';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+// ── IN-MEMORY CACHE (replaces localStorage for data) ─────────
+let _db={fines:[],family:[],reminders:[],profile:{}};
+let _uid=null;
+
+function getFines(){return _db.fines;}
+function saveFines(fines){
+  _db.fines=fines;
+  _syncFines();
+}
+async function _syncFines(){
+  if(!_uid)return;
+  await sb.from('fines').delete().eq('user_id',_uid);
+  if(_db.fines.length){
+    await sb.from('fines').insert(_db.fines.map(f=>({
+      inf_id:f.id,user_id:_uid,type:f.type,amount:f.amount,
+      total_amount:f.totalAmount||f.amount,location:f.location,
+      date:f.date,due:f.due,demerit:f.demerit||0,
+      status:f.status||'pending',rego:f.rego||''
+    })));
+  }
+}
+
+function getFamily(){return _db.family;}
+function saveFamily(fam){
+  _db.family=fam;
+  _syncFamily();
+}
+async function _syncFamily(){
+  if(!_uid)return;
+  await sb.from('family_members').delete().eq('user_id',_uid);
+  if(_db.family.length){
+    await sb.from('family_members').insert(_db.family.map(m=>({...m,user_id:_uid})));
+  }
+}
+
+function getCustomReminders(){return _db.reminders;}
+function saveCustomReminders(r){
+  _db.reminders=r;
+  _syncReminders();
+}
+async function _syncReminders(){
+  if(!_uid)return;
+  await sb.from('custom_reminders').delete().eq('user_id',_uid);
+  if(_db.reminders.length){
+    await sb.from('custom_reminders').insert(_db.reminders.map(r=>({...r,user_id:_uid})));
+  }
+}
+
+async function _loadUserData(){
+  const[{data:fins},{data:fam},{data:rems},{data:prof}]=await Promise.all([
+    sb.from('fines').select('*').eq('user_id',_uid),
+    sb.from('family_members').select('*').eq('user_id',_uid),
+    sb.from('custom_reminders').select('*').eq('user_id',_uid),
+    sb.from('profiles').select('*').eq('id',_uid).single()
+  ]);
+  _db.fines=(fins||[]).map(f=>({
+    id:f.inf_id,type:f.type,amount:f.amount,totalAmount:f.total_amount,
+    location:f.location,date:f.date,due:f.due,demerit:f.demerit,
+    status:f.status,rego:f.rego
+  }));
+  _db.family=fam||[];
+  _db.reminders=rems||[];
+  _db.profile=prof||{};
+}
+// ─────────────────────────────────────────────────────────────
+
 // ── Storage ─────────────────────────────────────────────────────
 const SK='sf_v3',DK='sf_dev';
 function st(){try{let d=localStorage.getItem(SK),m=d?JSON.parse(d):{};return{g:k=>m[k],s:(k,v)=>{m[k]=v;localStorage.setItem(SK,JSON.stringify(m))},all:()=>m}}catch(e){let m={};return{g:k=>m[k],s:(k,v)=>{m[k]=v},all:()=>m}}}
 const S=st();
 function getUser(){return S.g('user')}
 function saveUser(u){S.s('user',u)}
-function getFines(){return S.g('fines')||DFINES()}
-function saveFines(f){S.s('fines',f)}
 function devId(){try{let d=localStorage.getItem(DK);if(!d){d='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem(DK,d)}return d}catch(e){return'dfallback'}}
 function getTrusted(){return S.g('trusted')||[]}
 function isTrusted(){return getTrusted().some(d=>d.id===devId())}
@@ -1572,10 +1643,22 @@ function DFINES(){return[
 let authMethod='email',authDest='',currentOTP='',trustDev=true,pendingFine=null,cdInt=null,editFineId=null,smsForFine=null;
 
 // ── Init ─────────────────────────────────────────────────────────
-function init(){
-  const u=getUser();
-  if(u&&isTrusted()){showDeviceStep(u);}
-  else{document.getElementById('auth-shell').style.display='flex';}
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    _uid=session.user.id;
+    await _loadUserData();
+    const p=_db.profile;
+    if(p&&p.name){
+      completeLogin({name:p.name,fname:p.fname,email:session.user.email,phone:p.phone,licence:p.licence});
+    } else {
+      goStep('s-profile');
+      document.getElementById('app-shell').style.display='none';
+      document.getElementById('auth-shell').style.display='flex';
+    }
+  } else {
+    document.getElementById('auth-shell').style.display='flex';
+  }
 }
 function showDeviceStep(u){
   document.getElementById('auth-shell').style.display='flex';
@@ -1610,13 +1693,17 @@ function continueAuth(){
   }
   sendOTP();
 }
-function sendOTP(){
-  currentOTP=String(Math.floor(100000+Math.random()*900000));
+async function sendOTP(){
+  const btn=document.getElementById('btn-cont');
+  btn.disabled=true;btn.textContent='Sending…';
+  const{error}=await sb.auth.signInWithOtp({email:authDest,options:{shouldCreateUser:true}});
+  if(error){showToast('Error: '+error.message);btn.disabled=false;btn.textContent='Continue ';return;}
   document.getElementById('otp-dest').textContent=authDest;
-  document.getElementById('demo-otp').textContent=currentOTP;
   goStep('s-otp');
-  buildOTP();startCD();
+  buildOTP();startCountdown();
+  btn.disabled=false;btn.textContent='Continue ';
 }
+function startCountdown(){startCD();}
 function buildOTP(){
   const row=document.getElementById('otp-row');row.innerHTML='';
   for(let i=0;i<6;i++){
@@ -1630,42 +1717,67 @@ function buildOTP(){
   document.getElementById('ob0').focus();
 }
 function checkOTP(){const c=Array.from({length:6},(_,i)=>document.getElementById('ob'+i).value).join('');document.getElementById('btn-verify').disabled=c.length<6;}
-function verifyOTP(){
-  const c=Array.from({length:6},(_,i)=>document.getElementById('ob'+i).value).join('');
-  const btn=document.getElementById('btn-verify');btn.disabled=true;btn.innerHTML='<div class="spin"></div> Verifying...';
-  setTimeout(()=>{
-    if(c===currentOTP){
-      const u=getUser();
-      if(u&&(u.email===authDest||u.phone===authDest)){if(trustDev)addTrusted();launch(u);}
-      else{goStep('s-profile');detectDev();}
-    } else {
-      for(let i=0;i<6;i++){const el=document.getElementById('ob'+i);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);}
-      btn.disabled=false;btn.innerHTML='Verify <i class="ti ti-shield-check" aria-hidden="true"></i>';
-      showToast('Incorrect code — try again');
-    }
-  },1100);
+async function verifyOTP(){
+  const boxes=document.querySelectorAll('.otp-box');
+  const code=[...boxes].map(b=>b.value).join('').trim();
+  if(code.length<6){showToast('Enter the 6-digit code');return;}
+  const btn=document.getElementById('btn-verify');
+  btn.disabled=true;btn.innerHTML='<div class="spin"></div> Verifying...';
+  const{data,error}=await sb.auth.verifyOtp({email:authDest,token:code,type:'email'});
+  if(error){
+    for(let i=0;i<6;i++){const el=document.getElementById('ob'+i);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);}
+    showToast('Invalid or expired code — try again');btn.disabled=false;btn.innerHTML='Verify <i class="ti ti-shield-check" aria-hidden="true"></i>';return;
+  }
+  const user=data.user;
+  _uid=user.id;
+  await _loadUserData();
+  const existing=_db.profile;
+  if(existing&&existing.name){
+    completeLogin({name:existing.name,fname:existing.fname,email:user.email,phone:existing.phone,licence:existing.licence});
+  } else {
+    document.getElementById('p-fname').value='';
+    goStep('s-profile');
+  }
+  btn.disabled=false;btn.innerHTML='Verify <i class="ti ti-shield-check" aria-hidden="true"></i>';
 }
 function startCD(){let s=30;const btn=document.getElementById('btn-resend');btn.disabled=true;document.getElementById('cd-timer').textContent='('+s+'s)';clearInterval(cdInt);cdInt=setInterval(()=>{s--;document.getElementById('cd-timer').textContent='('+s+'s)';if(s<=0){clearInterval(cdInt);btn.disabled=false;document.getElementById('cd-timer').textContent='';}},1000);}
-function resendCode(){currentOTP=String(Math.floor(100000+Math.random()*900000));document.getElementById('demo-otp').textContent=currentOTP;for(let i=0;i<6;i++){const e=document.getElementById('ob'+i);e.value='';e.classList.remove('filled');}document.getElementById('ob0').focus();startCD();showToast('New code sent');}
+async function resendCode(){
+  await sb.auth.signInWithOtp({email:authDest,options:{shouldCreateUser:true}});
+  for(let i=0;i<6;i++){const e=document.getElementById('ob'+i);e.value='';e.classList.remove('filled');}
+  document.getElementById('ob0').focus();
+  startCD();showToast('New code sent to '+authDest);
+}
 function detectDev(){const ua=navigator.userAgent,mob=/mobile|android|iphone/i.test(ua),br=/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':'Safari';document.getElementById('dvc-icon').className='ti '+(mob?'ti-device-mobile':'ti-device-laptop');document.getElementById('dvc-label').textContent=(mob?'This mobile':'This computer')+' · '+br;}
 function pickDevice(y){trustDev=y;document.getElementById('dvc-yes').classList.toggle('on',y);document.getElementById('dvc-no').classList.toggle('on',!y);}
-function finishProfile(){
+async function finishProfile(){
   const fn=document.getElementById('p-fname').value.trim()||'User';
   const ln=document.getElementById('p-lname').value.trim()||'';
   const ph=document.getElementById('p-phone').value.trim();
   const lic=document.getElementById('p-licence').value.trim();
-  const u={fname:fn,lname:ln,name:(fn+' '+ln).trim(),email:authMethod==='email'?authDest:'',phone:authMethod==='phone'?authDest:ph?'+61 '+ph:'',licence:lic,verified:authMethod,joined:new Date().toISOString()};
-  saveUser(u);if(!getFines()||getFines().length===0)saveFines(DFINES());
-  if(trustDev)addTrusted();launch(u);
+  const u={fname:fn,lname:ln,name:(fn+' '+ln).trim(),email:authDest||'',phone:ph?'+61 '+ph:'',licence:lic,joined:new Date().toISOString()};
+  saveUser(u);
+  if(_uid){
+    await sb.from('profiles').upsert({id:_uid,name:u.name,fname:u.fname,phone:u.phone||'',licence:u.licence||''});
+    _db.profile=u;
+  }
+  if(!getFines()||getFines().length===0)saveFines(DFINES());
+  completeLogin(u);
 }
 function socialLogin(p){
   showToast('Signing in with '+p+'...');
   setTimeout(()=>{const u={fname:'Alex',lname:'Thompson',name:'Alex Thompson',email:'alex@'+p.toLowerCase()+'.com',phone:'',licence:'',verified:p,joined:new Date().toISOString()};saveUser(u);if(!getFines()||getFines().length===0)saveFines(DFINES());addTrusted();launch(u);},1400);
 }
 function goStep(id){document.querySelectorAll('.auth-step').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function logout(){showToast('Signing out...');setTimeout(()=>{document.getElementById('app-shell').style.display='none';document.getElementById('auth-shell').style.display='flex';goStep('s-welcome');},600);}
+function logout(){
+  sb.auth.signOut();
+  _uid=null;_db={fines:[],family:[],reminders:[],profile:{}};
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('auth-shell').style.display='flex';
+  goStep('s-welcome');
+}
 
 // ── Launch app ───────────────────────────────────────────────────
+function completeLogin(u){launch(u);}
 function launch(u){
   document.getElementById('auth-shell').style.display='none';
   document.getElementById('app-shell').style.display='flex';
@@ -1674,6 +1786,9 @@ function launch(u){
   setTimeout(()=>{initReveal();initRipple();initMagnetic();initTilt();initCounters();},120);
 }
 function populateApp(u){
+  // load reminder email pref
+  const savedEmail=S.g('reminderEmail')||(_db.profile&&_db.profile.reminder_email);
+  if(savedEmail)activateEmailUI(savedEmail);
   const n=u.fname||u.name||'there';
   const ini=((u.fname||'U')[0]+(u.lname||n.split(' ')[1]||'')[0]||'').toUpperCase()||'SF';
   const hr=new Date().getHours();
