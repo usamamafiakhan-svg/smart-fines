@@ -2671,7 +2671,17 @@ function renderDash(){
   const dem=fines.filter(f=>f.status!=='paid').reduce((s,f)=>s+(f.demerit||0),0);
   document.getElementById('s-dem').textContent=dem+' / 12';
   const dueFines=out.filter(f=>f.due).sort((a,b)=>new Date(a.due)-new Date(b.due));
-  if(dueFines.length){const nxt=dueFines[0];const today=new Date();today.setHours(0,0,0,0);const dueDate=new Date(nxt.due);dueDate.setHours(0,0,0,0);const days=Math.round((dueDate-today)/(864e5));document.getElementById('s-due').textContent=days<0?'Overdue':days===0?'Due Today':days===1?'Tomorrow':days+' days';document.getElementById('s-due-lbl').textContent=new Date(nxt.due).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
+  if(dueFines.length){
+    const nxt=dueFines[0];
+    const today=new Date();today.setHours(0,0,0,0);
+    const dueDate=new Date(nxt.due);dueDate.setHours(0,0,0,0);
+    const days=Math.round((dueDate-today)/(864e5));
+    document.getElementById('s-due').textContent=days<0?'Overdue':days===0?'Due Today':days===1?'Tomorrow':days+' days';
+    document.getElementById('s-due-lbl').textContent=new Date(nxt.due).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+  }else{
+    document.getElementById('s-due').textContent='—';
+    document.getElementById('s-due-lbl').textContent='No upcoming';
+  }
   updateDemBar();
 }
 function renderReminders(){
