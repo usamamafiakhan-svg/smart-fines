@@ -1290,30 +1290,25 @@ a{text-decoration:none}
           <!-- EMAIL REMINDERS -->
           <div class="card" style="border:1px solid rgba(79,156,249,0.3)">
             <div class="card-hd">
-              <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:rgba(79,156,249,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📧</div><div><div class="card-lbl">Email reminders</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Powered by EmailJS · Free · No server needed</div></div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:rgba(79,156,249,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📧</div><div><div class="card-lbl">Email reminders</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Powered by Resend · Automatic · No setup needed</div></div></div>
               <span id="email-status-badge" class="badge b-grey">Not set up</span>
             </div>
             <div id="emailjs-setup-panel">
               <div class="info-banner info" style="margin-bottom:1rem">
-                <i class="ti ti-info-circle" aria-hidden="true"></i>
-                <div><strong>3-minute setup:</strong> Go to <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue);font-weight:600">emailjs.com</a> → create free account → Add Email Service → Create Template → paste the 3 keys below. Free for 200 emails/month.</div>
+                <i class="ti ti-info-circle"></i>
+                <div>Enter your email address to receive fine deadline reminders automatically.</div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-                <div><label class="fl">Service ID</label><input class="fi no-icon" id="ejs-service" placeholder="service_xxxxxxx"></div>
-                <div><label class="fl">Template ID</label><input class="fi no-icon" id="ejs-template" placeholder="template_xxxxxxx"></div>
-              </div>
-              <div style="margin-bottom:10px"><label class="fl">Public Key</label><input class="fi no-icon" id="ejs-pubkey" placeholder="your_public_key"></div>
-              <div style="margin-bottom:1rem"><label class="fl">Your email address</label><div class="fi-wrap"><i class="ti ti-mail" aria-hidden="true"></i><input class="fi" id="reminder-email" type="email" placeholder="you@example.com"></div></div>
+              <div style="margin-bottom:1rem"><label class="fl">Your email address</label><div class="fi-wrap"><i class="ti ti-mail"></i><input class="fi" id="reminder-email" type="email" placeholder="you@example.com"></div></div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-primary" style="flex:1;width:auto" onclick="saveEmailJS()"><i class="ti ti-check" aria-hidden="true"></i> Connect & send test</button>
-                <button class="btn-outline" style="flex:0 0 auto;width:auto;margin-top:0;padding:12px 18px" onclick="skipEmailDemo()">Demo mode</button>
+                <button class="btn btn-primary" style="flex:1;width:auto" onclick="saveReminderEmail()"><i class="ti ti-check"></i> Activate reminders</button>
+                <button class="btn-outline" style="flex:0 0 auto;width:auto;margin-top:0;padding:12px 18px" onclick="skipEmailDemo()">Skip</button>
               </div>
             </div>
             <div id="emailjs-active-panel" style="display:none">
-              <div class="info-banner success" style="margin-bottom:1rem"><i class="ti ti-circle-check" aria-hidden="true"></i> <span>Sending to <strong id="email-display">—</strong></span></div>
+              <div class="info-banner success" style="margin-bottom:1rem"><i class="ti ti-circle-check"></i> <span>Sending reminders to <strong id="email-display">—</strong></span></div>
               <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn btn-primary" style="flex:1;min-width:160px" onclick="testEmailNow()"><i class="ti ti-send" aria-hidden="true"></i> Send test email now</button>
-                <button class="btn-outline" style="flex:0 0 auto;margin-top:0" onclick="resetEmailJS()">Reset</button>
+                <button class="btn btn-primary" style="flex:1;min-width:160px;width:auto" onclick="testEmailNow()"><i class="ti ti-send"></i> Send test email now</button>
+                <button class="btn-outline" style="flex:0 0 auto;margin-top:0;width:auto" onclick="resetEmailJS()">Reset</button>
               </div>
             </div>
           </div>
@@ -1989,79 +1984,67 @@ function parseDate(str){
   return new Date(str);
 }
 
-// ── ① EMAIL via EmailJS ───────────────────────────────────────
-function saveEmailJS(){
-  const svc=document.getElementById('ejs-service').value.trim();
-  const tpl=document.getElementById('ejs-template').value.trim();
-  const key=document.getElementById('ejs-pubkey').value.trim();
+// ── ① EMAIL via Resend ───────────────────────────────────────
+async function saveReminderEmail(){
   const email=document.getElementById('reminder-email').value.trim();
-  if(!svc||!tpl||!key){showToast('Please fill in all three EmailJS fields');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email address');return;}
-  S.s('ejs',{svc,tpl,key,email});
+  if(!email||!email.includes('@')){showToast('Enter a valid email');return;}
+  if(_uid){
+    await sb.from('profiles').upsert({id:_uid,reminder_email:email},{onConflict:'id'});
+  }
+  S.s('reminderEmail',email);
   activateEmailUI(email);
-  loadEmailJS(key,()=>sendEmail(svc,tpl,key,email,{
-    to_email:email,
-    subject:'✅ SmartFine Victoria — Email reminders working!',
-    message:'Your SmartFine Victoria email reminders are set up.\n\nYou\'ll receive alerts at 14, 7, 3 days and on the due date for each fine.\n\nSmartFine Victoria',
-    fine_id:'TEST',fine_amount:'—',fine_due:'—',days_remaining:'Test email'
-  }));
+  showToast('Reminders activated for '+email);
 }
 function skipEmailDemo(){
-  S.s('ejs',{demo:true,email:'demo@smartfine.vic'});
-  activateEmailUI('demo@smartfine.vic (demo mode)');
-  showToast('Email shown as configured (demo mode)');
+  showToast('Email reminders skipped');
 }
 function activateEmailUI(email){
   const sp=document.getElementById('emailjs-setup-panel');
   const ap=document.getElementById('emailjs-active-panel');
-  const sb=document.getElementById('email-status-badge');
+  const sb2=document.getElementById('email-status-badge');
   const ed=document.getElementById('email-display');
   if(sp)sp.style.display='none';
   if(ap)ap.style.display='block';
   if(ed)ed.textContent=email;
-  if(sb){sb.textContent='✓ Active';sb.className='badge b-green';}
+  if(sb2){sb2.textContent='Active';sb2.className='badge b-green';}
+  S.s('reminderEmail',email);
   scheduleAllEmails();
 }
 function resetEmailJS(){
-  S.s('ejs',null);
+  S.s('reminderEmail',null);
   const sp=document.getElementById('emailjs-setup-panel');
   const ap=document.getElementById('emailjs-active-panel');
-  const sb=document.getElementById('email-status-badge');
+  const sb2=document.getElementById('email-status-badge');
   if(sp)sp.style.display='block';
   if(ap)ap.style.display='none';
-  if(sb){sb.textContent='Not set up';sb.className='badge b-grey';}
+  if(sb2){sb2.textContent='Not set up';sb2.className='badge b-grey';}
 }
-function loadEmailJS(publicKey,cb){
-  if(window.emailjs){window.emailjs.init({publicKey});cb();return;}
-  const s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-  s.onload=()=>{window.emailjs.init({publicKey});cb();};
-  s.onerror=()=>showToast('EmailJS failed to load — check your internet');
-  document.head.appendChild(s);
+async function sendResendEmail(to,subject,html){
+  try{
+    const r=await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({from:'SmartFine Victoria <onboarding@resend.dev>',to,subject,html})
+    });
+    const d=await r.json();
+    if(r.ok){showToast('📧 Email sent to '+to);}
+    else{showToast('Email error: '+(d.message||'check Resend account'));}
+  }catch(e){showToast('Email failed — check connection');}
 }
-function sendEmail(svc,tpl,key,toEmail,params){
-  if(!window.emailjs){loadEmailJS(key,()=>sendEmail(svc,tpl,key,toEmail,params));return;}
-  window.emailjs.send(svc,tpl,params)
-    .then(()=>showToast('📧 Email sent to '+toEmail))
-    .catch(e=>{console.error('EmailJS:',e);showToast('Email failed — check your EmailJS keys');});
+async function sendEmail(svc,tpl,key,toEmail,params){
+  const html=`<h2>SmartFine Reminder</h2><p>Fine #${params.fine_id||''} for $${params.amount||params.fine_amount||''} is due on ${params.due_date||params.fine_due||''}.</p><p>Offence: ${params.offence||params.message||''}</p><p>Location: ${params.location||''}</p>`;
+  await sendResendEmail(toEmail,'SmartFine — Fine reminder',html);
 }
-function testEmailNow(){
-  const cfg=S.g('ejs');
-  if(!cfg||cfg.demo){showToast('Demo mode — enter real EmailJS keys to send actual emails');return;}
-  const fines=getFines().filter(f=>f.status!=='paid');
-  const f=fines[0];
-  sendEmail(cfg.svc,cfg.tpl,cfg.key,cfg.email,{
-    to_email:cfg.email,
-    subject:`SmartFine Victoria — Fine due ${f?f.due:'soon'}`,
-    message:f?`Fine #${f.id} of $${f.totalAmount||f.amount} (${f.type}) is due on ${f.due}.\n\nPay at: https://online.fines.vic.gov.au\nCall: 1300 369 819\n\nSmartFine Victoria`:'Test from SmartFine Victoria.',
-    fine_id:f?f.id:'TEST',fine_amount:f?'$'+(f.totalAmount||f.amount):'—',fine_due:f?f.due:'—',days_remaining:f?Math.ceil((parseDate(f.due)-new Date())/864e5)+' days':'—'
-  });
+async function testEmailNow(){
+  const email=S.g('reminderEmail');
+  if(!email){showToast('Set up your email first');return;}
+  await sendResendEmail(email,'SmartFine — Test reminder','<h2>✅ SmartFine reminders are working!</h2><p>This is a test reminder from your SmartFine Victoria app. You\'ll receive notifications before your fine due dates.</p>');
 }
 function scheduleAllEmails(){
-  const cfg=S.g('ejs');if(!cfg||cfg.demo)return;
-  getFines().filter(f=>f.status!=='paid').forEach(f=>scheduleEmailsForFine(f,cfg));
+  const email=S.g('reminderEmail');if(!email)return;
+  getFines().filter(f=>f.status!=='paid').forEach(f=>scheduleEmailsForFine(f,email));
 }
-function scheduleEmailsForFine(fine,cfg){
+function scheduleEmailsForFine(fine,email){
   const due=parseDate(fine.due);if(isNaN(due))return;
   const now=new Date();
   [14,7,3,0].forEach(days=>{
@@ -2069,12 +2052,7 @@ function scheduleEmailsForFine(fine,cfg){
     const ms=t-now;
     if(ms>0)setTimeout(()=>{
       const dt=days===0?'TODAY':days+' days';
-      sendEmail(cfg.svc,cfg.tpl,cfg.key,cfg.email,{
-        to_email:cfg.email,
-        subject:`⚠ SmartFine Victoria — Fine due ${dt}`,
-        message:`Fine due ${dt}!\n\n#${fine.id}\n${fine.type}\n$${fine.totalAmount||fine.amount}\nDue: ${fine.due}\nRego: ${fine.rego||'—'}\n\nPay: https://online.fines.vic.gov.au\nCall: 1300 369 819\n\nSmartFine Victoria`,
-        fine_id:fine.id,fine_amount:'$'+(fine.totalAmount||fine.amount),fine_due:fine.due,days_remaining:dt
-      });
+      sendResendEmail(email,`⚠ SmartFine Victoria — Fine due ${dt}`,`<h2>Fine due ${dt}!</h2><p>#${fine.id}<br>${fine.type}<br>$${fine.totalAmount||fine.amount}<br>Due: ${fine.due}<br>Rego: ${fine.rego||'—'}</p><p>Pay: <a href="https://online.fines.vic.gov.au">online.fines.vic.gov.au</a></p>`);
     },ms);
   });
 }
@@ -2258,7 +2236,7 @@ function saveSMSReminder(){
 // Restore all notification systems on app launch
 function restoreAllNotifications(){
   if(S.g('push_on')&&Notification.permission==='granted'){activatePushUI();restorePush();setTimeout(checkDueDates,2000);}
-  const cfg=S.g('ejs');if(cfg){activateEmailUI(cfg.email||'demo');scheduleAllEmails();}
+  const reminderEmail=S.g('reminderEmail');if(reminderEmail){activateEmailUI(reminderEmail);}
   const ph=S.g('sms_phone');if(ph){scheduleAllSMS();const sb=document.getElementById('sms-status-badge');if(sb){sb.textContent='Number saved';sb.className='badge b-amber';}}
 }
 
@@ -2591,8 +2569,8 @@ function DFAMILY(){return[
   {id:'fm2',name:'Sarah Thompson',rel:'Partner',rego:'XYZ987',vehicle:'Honda CRV',phone:'0400000002',lic:'',notes:''},
   {id:'fm3',name:'Jamie Thompson',rel:'Child — P-plate',rego:'DEF456',vehicle:'Mazda 3',phone:'0400000003',lic:'',notes:'P2 licence'},
 ];}
-function getFamilyMembers(){return S.g('family')||DFAMILY();}
-function saveFamilyMembers(f){S.s('family',f);}
+function getFamilyMembers(){return getFamily().length?getFamily():DFAMILY();}
+function saveFamilyMembers(f){saveFamily(f);}
 function fmInitials(name){const p=name.trim().split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
 
 function renderFamily(){
@@ -2695,8 +2673,6 @@ function confirmDeleteFamilyMember(){
 }
 
 // ── CUSTOM REMINDERS ────────────────────────────────────────
-function getCustomReminders(){return S.g('custom_reminders')||[];}
-function saveCustomReminders(r){S.s('custom_reminders',r);}
 
 function addCustomReminder(){
   const note=document.getElementById('crem-note').value.trim();
@@ -2720,13 +2696,9 @@ function addCustomReminder(){
     },ms);
   }
   // Schedule email
-  const cfg=S.g('ejs');
-  if(cfg&&!cfg.demo&&ms>0){
-    setTimeout(()=>sendEmail(cfg.svc,cfg.tpl,cfg.key,cfg.email,{
-      to_email:cfg.email,subject:'⏰ SmartFine Reminder: '+note,
-      message:'Your SmartFine reminder: '+note+'\n\nScheduled for: '+new Date(dt).toLocaleString('en-AU'),
-      fine_id:'Reminder',fine_amount:'—',fine_due:new Date(dt).toLocaleDateString('en-AU'),days_remaining:'Custom reminder'
-    }),ms);
+  const reminderEmail=S.g('reminderEmail');
+  if(reminderEmail&&ms>0){
+    setTimeout(()=>sendResendEmail(reminderEmail,'⏰ SmartFine Reminder: '+note,`<h2>SmartFine Reminder</h2><p>${note}</p><p>Scheduled for: ${new Date(dt).toLocaleString('en-AU')}</p>`),ms);
   }
   renderCustomReminders();
   showToast('Reminder set for '+new Date(dt).toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'}));
