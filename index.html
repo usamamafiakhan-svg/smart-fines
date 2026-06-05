@@ -183,6 +183,13 @@
 /* btn-outline in light shell */
 #app-shell .btn-outline{background:#fff;border:1.5px solid var(--border2);color:var(--text);font-weight:500}
 #app-shell .btn-outline:hover{background:var(--surface2);border-color:rgba(124,58,237,0.35);color:var(--purple);box-shadow:var(--sh-md)}
+/* fix btn-primary width:100% conflicting with flex layout */
+#app-shell .btn-primary[style*="flex"]{width:auto}
+#app-shell .btn-outline[style*="flex"]{width:auto}
+/* form labels — visible on white */
+#app-shell .fl{color:#475569;font-weight:600}
+#app-shell .fi::placeholder{color:#94a3b8}
+#app-shell .fi-wrap i{color:#94a3b8}
 /* attractive light main bg with subtle mesh */
 #app-shell .main{background:linear-gradient(160deg,#f0f4ff 0%,#faf5ff 35%,#f0fdfa 65%,#eff6ff 100%)}
 /* ensure page title gradient works on light bg */
@@ -1271,8 +1278,8 @@ a{text-decoration:none}
               <div style="margin-bottom:10px"><label class="fl">Public Key</label><input class="fi no-icon" id="ejs-pubkey" placeholder="your_public_key"></div>
               <div style="margin-bottom:1rem"><label class="fl">Your email address</label><div class="fi-wrap"><i class="ti ti-mail" aria-hidden="true"></i><input class="fi" id="reminder-email" type="email" placeholder="you@example.com"></div></div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-primary" style="flex:1" onclick="saveEmailJS()"><i class="ti ti-check" aria-hidden="true"></i> Connect & send test</button>
-                <button class="btn-outline" style="flex:0 0 auto;margin-top:0;padding:12px 16px" onclick="skipEmailDemo()">Demo mode</button>
+                <button class="btn btn-primary" style="flex:1;width:auto" onclick="saveEmailJS()"><i class="ti ti-check" aria-hidden="true"></i> Connect & send test</button>
+                <button class="btn-outline" style="flex:0 0 auto;width:auto;margin-top:0;padding:12px 18px" onclick="skipEmailDemo()">Demo mode</button>
               </div>
             </div>
             <div id="emailjs-active-panel" style="display:none">
