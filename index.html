@@ -81,19 +81,21 @@ a{text-decoration:none}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 
-/* ═══════════════ AUTH ═══════════════ */
-#auth-shell{display:flex;min-height:100vh;align-items:stretch;background:var(--bg)}
-.auth-left{flex:1;display:none;background:linear-gradient(135deg,#080c17 0%,#0d1525 100%);padding:3rem;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.auth-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 30% 30%,rgba(79,156,249,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(0,212,170,0.12) 0%,transparent 60%);animation:auroraShift 15s ease-in-out infinite alternate}
-@media(min-width:900px){.auth-left{display:flex}}
+/* ═══════════════ AUTH — VIDEO HERO ═══════════════ */
+#auth-shell{position:relative;min-height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+#hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(5,8,15,0.25) 0%,rgba(5,8,15,0.45) 40%,rgba(5,8,15,0.75) 100%),radial-gradient(ellipse 80% 80% at 50% 50%,transparent 30%,rgba(5,8,15,0.5) 100%);pointer-events:none}
+.auth-center{position:relative;z-index:2;width:100%;max-width:500px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;min-height:100vh;justify-content:center;gap:1.25rem}
+.auth-card{background:rgba(8,12,23,0.72);backdrop-filter:blur(48px) saturate(180%);-webkit-backdrop-filter:blur(48px) saturate(180%);border:1px solid rgba(255,255,255,0.13);border-radius:28px;padding:2.5rem 2.25rem;width:100%;box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 32px 80px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.1)}
+.hero-tagline{font-size:12px;color:rgba(255,255,255,0.3);text-align:center;letter-spacing:0.04em}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.hero-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:99px;font-size:12px;color:rgba(255,255,255,0.65);backdrop-filter:blur(10px)}
+.hero-pill i{font-size:13px;color:var(--blue)}
+/* Scrollable on small screens */
+@media(max-height:700px){.auth-center{justify-content:flex-start;padding-top:2rem;padding-bottom:2rem}}
+/* Keep old class names working */
+.auth-right{background:transparent;width:100%}
 .auth-hero-title{font-size:40px;font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,rgba(79,156,249,0.9) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.auth-hero-sub{font-size:16px;color:rgba(255,255,255,0.6);line-height:1.6;max-width:340px}
-.auth-feature-list{list-style:none;margin-top:2rem}
-.auth-feature-list li{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:14px}
-.auth-feature-list li i{color:var(--blue);font-size:18px;flex-shrink:0;filter:drop-shadow(0 0 6px var(--blue-glow))}
-.auth-tagline{font-size:13px;color:rgba(255,255,255,0.3);border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;margin-top:auto}
-.auth-right{width:100%;max-width:460px;background:rgba(5,8,15,0.9);backdrop-filter:blur(40px);border-left:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:2.5rem 2rem;min-height:100vh}
-@media(min-width:900px){.auth-right{padding:3rem 2.5rem}}
 .auth-brand-row{display:flex;align-items:center;gap:10px;margin-bottom:2.5rem}
 .auth-brand-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--blue2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px var(--blue-glow)}
 .auth-brand-text{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
@@ -738,26 +740,20 @@ a{text-decoration:none}
 
 <!-- ══════════════ AUTH SHELL ══════════════ -->
 <div id="auth-shell">
-  <div class="auth-left">
-    <canvas id="auth-canvas"></canvas>
-    <div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:2.5rem">
-        <div style="width:40px;height:40px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🚗</div>
-        <div style="font-size:17px;font-weight:600;color:#fff">SmartFine Victoria</div>
-      </div>
-      <div class="auth-hero-title">Your Victorian fines,<br>finally under control.</div>
-      <div class="auth-hero-sub">Scan your infringement notice, track due dates, and get SMS reminders — so you never miss a payment again.</div>
-      <ul class="auth-feature-list">
-        <li><i class="ti ti-scan" aria-hidden="true"></i> OCR notice scanning — no typing needed</li>
-        <li><i class="ti ti-bell" aria-hidden="true"></i> Real SMS alerts at 14, 7, 3 days before due</li>
-        <li><i class="ti ti-award" aria-hidden="true"></i> Demerit point tracking per driver</li>
-        <li><i class="ti ti-users" aria-hidden="true"></i> Family & fleet — manage multiple vehicles</li>
-        <li><i class="ti ti-shield-lock" aria-hidden="true"></i> Privacy Act 1988 compliant · data never sold</li>
-      </ul>
+  <!-- Full-screen video background -->
+  <video id="hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+
+  <div class="auth-center">
+    <!-- Brand above card -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.25rem">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--blue2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px var(--blue-glow)">🚗</div>
+      <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.3px">SmartFine <span style="color:var(--gold)">Victoria</span></div>
     </div>
-    <div class="auth-tagline">SmartFine Victoria · ABN 00 000 000 000 · fines.vic.gov.au payments processed securely</div>
-  </div>
-  <div class="auth-right">
+
+  <div class="auth-right auth-card">
     <div class="auth-brand-row">
       <div class="auth-brand-icon">🚗</div>
       <div class="auth-brand-text">SmartFine Victoria<span>Track · Manage · Pay</span></div>
@@ -834,7 +830,17 @@ a{text-decoration:none}
       <button class="btn btn-primary" onclick="autoLogin()"><i class="ti ti-login" aria-hidden="true"></i> Continue as <span id="dv-name">me</span></button>
       <button class="btn-outline" onclick="goStep('s-welcome')">Sign in as someone else</button>
     </div>
-  </div>
+  </div><!-- end auth-right / auth-card -->
+
+    <!-- Feature pills below card -->
+    <div class="hero-pills">
+      <span class="hero-pill"><i class="ti ti-scan"></i> OCR Scanning</span>
+      <span class="hero-pill"><i class="ti ti-bell"></i> Smart Alerts</span>
+      <span class="hero-pill"><i class="ti ti-users"></i> Fleet Management</span>
+      <span class="hero-pill"><i class="ti ti-shield-lock"></i> Privacy Compliant</span>
+    </div>
+    <div class="hero-tagline">SmartFine Victoria · fines.vic.gov.au payments processed securely</div>
+  </div><!-- end auth-center -->
 </div>
 
 <!-- ══════════════ APP SHELL ══════════════ -->
