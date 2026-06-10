@@ -1739,15 +1739,8 @@ a{text-decoration:none}
           <div class="step-dots"><div class="sdot active"></div><div class="sdot"></div><div class="sdot"></div></div>
           <div class="auth-heading">Sign in or create account</div>
           <div class="auth-sub">Enter your email to get a verification code. No password needed.</div>
-          <div class="tab-row">
-            <button class="tab-btn active" onclick="switchTab('email')">📧 Email</button>
-            <button class="tab-btn" onclick="switchTab('phone')">📱 Mobile</button>
-          </div>
           <div id="email-section">
             <div class="fg"><label class="fl">Email address</label><div class="fi-wrap"><i class="ti ti-mail" aria-hidden="true"></i><input class="fi" id="inp-email" type="email" placeholder="you@example.com" autocomplete="email"></div><div class="ferr" id="email-err">Please enter a valid email address</div></div>
-          </div>
-          <div id="phone-section" style="display:none">
-            <div class="fg"><label class="fl">Mobile number</label><div class="phone-row"><div class="phone-pre">🇦🇺 +61</div><input class="fi no-icon" id="inp-phone" type="tel" placeholder="4xx xxx xxx" style="flex:1" autocomplete="tel"></div><div class="ferr" id="phone-err">Please enter a valid Australian mobile number</div></div>
           </div>
           <button class="btn btn-primary" id="btn-cont" onclick="continueAuth()">Continue <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
           <div class="divider">or continue with</div>
@@ -2461,24 +2454,11 @@ document.addEventListener('click',function(e){
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAuthModal();});
 
 // ── Auth flow ─────────────────────────────────────────────────────
-function switchTab(m){
-  authMethod=m;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(m==='email'?0:1)));
-  document.getElementById('email-section').style.display=m==='email'?'block':'none';
-  document.getElementById('phone-section').style.display=m==='phone'?'block':'none';
-}
 function continueAuth(){
   const ev=document.getElementById('inp-email').value.trim();
-  const pv=document.getElementById('inp-phone').value.trim().replace(/\s/g,'');
-  if(authMethod==='email'){
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev)){document.getElementById('email-err').classList.add('show');document.getElementById('inp-email').classList.add('err');return;}
-    document.getElementById('email-err').classList.remove('show');document.getElementById('inp-email').classList.remove('err');
-    authDest=ev;
-  } else {
-    if(!/^[0-9]{9,10}$/.test(pv)){document.getElementById('phone-err').classList.add('show');document.getElementById('inp-phone').classList.add('err');return;}
-    document.getElementById('phone-err').classList.remove('show');document.getElementById('inp-phone').classList.remove('err');
-    authDest='+61 '+document.getElementById('inp-phone').value.trim();
-  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev)){document.getElementById('email-err').classList.add('show');document.getElementById('inp-email').classList.add('err');return;}
+  document.getElementById('email-err').classList.remove('show');document.getElementById('inp-email').classList.remove('err');
+  authDest=ev;
   sendOTP();
 }
 async function sendOTP(){
