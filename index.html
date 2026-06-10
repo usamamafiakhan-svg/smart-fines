@@ -2606,9 +2606,9 @@ async function finishProfile(){
   if(!getFines()||getFines().length===0)saveFines(DFINES());
   completeLogin(u);
 }
-function socialLogin(p){
-  showToast('Signing in with '+p+'...');
-  setTimeout(()=>{const u={fname:'Alex',lname:'Thompson',name:'Alex Thompson',email:'alex@'+p.toLowerCase()+'.com',phone:'',licence:'',verified:p,joined:new Date().toISOString()};saveUser(u);if(!getFines()||getFines().length===0)saveFines(DFINES());addTrusted();launch(u);},1400);
+async function socialLogin(p){
+  const{error}=await sb.auth.signInWithOAuth({provider:p.toLowerCase(),options:{redirectTo:window.location.origin+window.location.pathname}});
+  if(error)showToast('Error: '+error.message);
 }
 function goStep(id){document.querySelectorAll('.auth-step').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function logout(){
