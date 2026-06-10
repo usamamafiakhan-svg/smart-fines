@@ -1804,6 +1804,14 @@ a{text-decoration:none}
 
 </div><!-- end auth-shell -->
 
+<div id="lock-shell" style="display:none;position:fixed;inset:0;z-index:99999;background:#05070d;align-items:center;justify-content:center;flex-direction:column;color:#e8edf5;text-align:center;padding:24px">
+  <div style="width:84px;height:84px;border-radius:50%;background:rgba(0,212,170,0.12);display:flex;align-items:center;justify-content:center;font-size:38px;color:#00d4aa;margin-bottom:22px"><i class="ti ti-fingerprint" aria-hidden="true"></i></div>
+  <div style="font-size:19px;font-weight:800;margin-bottom:6px">Welcome back</div>
+  <div style="font-size:13px;color:rgba(232,237,245,0.5);margin-bottom:28px;max-width:280px">Use Face ID or Touch ID to unlock SmartFine</div>
+  <button class="btn btn-primary" onclick="unlockWithBiometric()" style="max-width:240px;width:100%"><i class="ti ti-fingerprint" aria-hidden="true"></i> Unlock</button>
+  <button class="btn-ghost" onclick="useEmailInstead()" style="margin-top:14px;color:rgba(232,237,245,0.5)">Sign in with email instead</button>
+</div>
+
 <!-- ══════════════ APP SHELL ══════════════ -->
 <div id="app-shell">
   <!-- Full-screen background video -->
@@ -2118,6 +2126,10 @@ a{text-decoration:none}
             <button class="btn-outline" style="margin-top:8px" onclick="clearDevices()">Remove all trusted devices</button>
           </div>
           <div class="card">
+            <div class="card-hd"><div class="card-lbl">Security</div></div>
+            <div class="rm-row" style="border-bottom:none"><div class="rm-icon green"><i class="ti ti-fingerprint" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">Face ID / Touch ID</div><div class="rm-meta" id="bio-meta">Quick unlock on this device — no code needed</div></div><button class="toggle" id="tog-bio" onclick="toggleBiometric()" aria-label="Face ID toggle"></button></div>
+          </div>
+          <div class="card">
             <div class="card-hd"><div class="card-lbl">Subscription</div></div>
             <div class="rm-row"><div class="rm-icon blue"><i class="ti ti-crown" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">SmartFine Premium</div><div class="rm-meta">$4.99/month · All features unlocked</div></div><span class="badge b-green">Active</span></div>
             <div class="rm-row" style="border-bottom:none"><div class="rm-icon green"><i class="ti ti-shield-lock" aria-hidden="true"></i></div><div class="rm-body"><div class="rm-title">Privacy Act 1988 compliant</div><div class="rm-meta">End-to-end encrypted · Data never sold</div></div></div>
@@ -2377,7 +2389,13 @@ async function init(){
     await _loadUserData();
     const p=_db.profile;
     if(p&&p.name){
-      completeLogin({name:p.name,fname:p.fname,email:session.user.email,phone:p.phone,licence:p.licence});
+      const u={name:p.name,fname:p.fname,email:session.user.email,phone:p.phone,licence:p.licence};
+      saveUser(u);
+      if(S.g('biometric_enabled')&&S.g('biometric_cred_id')){
+        document.getElementById('lock-shell').style.display='flex';
+      } else {
+        completeLogin(u);
+      }
     } else {
       goStep('s-profile');
       document.getElementById('app-shell').style.display='none';
@@ -2400,6 +2418,63 @@ function showDeviceStep(u){
   goStep('s-device');
 }
 function autoLogin(){const u=getUser();if(u)launch(u);}
+
+// ── Face ID / Touch ID (WebAuthn) ──────────────────────────────────
+async function biometricAvailable(){
+  if(!window.PublicKeyCredential||!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)return false;
+  try{return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();}catch(e){return false;}
+}
+async function toggleBiometric(){
+  const on=document.getElementById('tog-bio').classList.contains('on');
+  if(on){
+    S.s('biometric_enabled',false);S.s('biometric_cred_id',null);
+    document.getElementById('tog-bio').classList.remove('on');
+    document.getElementById('bio-meta').textContent='Quick unlock on this device — no code needed';
+    showToast('Face ID / Touch ID disabled');
+    return;
+  }
+  if(!await biometricAvailable()){showToast('Face ID / Touch ID isn\'t available on this device');return;}
+  try{
+    const u=getUser();
+    const cred=await navigator.credentials.create({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      rp:{name:'SmartFine Victoria'},
+      user:{id:crypto.getRandomValues(new Uint8Array(16)),name:u?.email||'user',displayName:u?.name||'SmartFine User'},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},
+      timeout:60000,
+    }});
+    if(cred){
+      S.s('biometric_enabled',true);
+      S.s('biometric_cred_id',btoa(String.fromCharCode(...new Uint8Array(cred.rawId))));
+      document.getElementById('tog-bio').classList.add('on');
+      document.getElementById('bio-meta').textContent='Enabled — unlock with Face ID / Touch ID';
+      showToast('Face ID / Touch ID enabled!');
+    }
+  }catch(e){showToast('Couldn\'t enable Face ID / Touch ID');}
+}
+async function unlockWithBiometric(){
+  try{
+    const credIdStr=S.g('biometric_cred_id');
+    const credId=Uint8Array.from(atob(credIdStr),c=>c.charCodeAt(0));
+    const assertion=await navigator.credentials.get({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials:[{id:credId,type:'public-key'}],
+      userVerification:'required',
+      timeout:60000,
+    }});
+    if(assertion){
+      document.getElementById('lock-shell').style.display='none';
+      const u=getUser();if(u)launch(u);
+    }
+  }catch(e){showToast('Face ID / Touch ID failed — try again');}
+}
+function useEmailInstead(){
+  document.getElementById('lock-shell').style.display='none';
+  S.s('biometric_enabled',false);S.s('biometric_cred_id',null);
+  sb.auth.signOut();
+  location.reload();
+}
 
 // ── Landing page ─────────────────────────────────────────────────
 function openAuthModal(){
@@ -2579,6 +2654,10 @@ function populateApp(u){
   document.getElementById('pf-email').innerHTML=u.email?`${u.email} <span class="verified"><i class="ti ti-check" aria-hidden="true"></i> Verified</span>`:'Not set';
   document.getElementById('pf-phone').textContent=u.phone||'Not set';
   document.getElementById('pf-licence').textContent=u.licence||'—';
+  if(S.g('biometric_enabled')&&S.g('biometric_cred_id')){
+    document.getElementById('tog-bio').classList.add('on');
+    document.getElementById('bio-meta').textContent='Enabled — unlock with Face ID / Touch ID';
+  }
   renderTrusted();renderDash();renderReminders();renderDemerits();
   if(u.phone){document.getElementById('sms-phone-global').value=u.phone.replace('+61 ','');}
   renderFines();
