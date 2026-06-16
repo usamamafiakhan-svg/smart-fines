@@ -2201,7 +2201,7 @@ a{text-decoration:none}
       <div class="ferr" id="da-err">Incorrect password</div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn-outline" style="flex:1" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-outline" style="flex:1" onclick="closeDeleteModal()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
       <button class="btn btn-primary" style="flex:1;background:var(--red);border-color:var(--red)" id="da-btn" onclick="deleteAccount()"><i class="ti ti-trash" aria-hidden="true"></i> Delete</button>
     </div>
   </div>
@@ -2230,7 +2230,7 @@ a{text-decoration:none}
     <div><label class="fl">Due date</label><input class="fi no-icon" id="e-due" placeholder="e.g. 19 May 2025"></div>
     <div class="modal-footer">
       <button class="btn btn-primary" onclick="saveEdit()"><i class="ti ti-check" aria-hidden="true"></i> Save changes</button>
-      <button class="btn-outline" style="margin-top:0" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('edit-modal')"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
     </div>
   </div>
 </div>
@@ -2251,7 +2251,7 @@ a{text-decoration:none}
     <div class="info-banner info"><i class="ti ti-info-circle" aria-hidden="true"></i> In this demo, a preview is shown. In the live app, real SMS messages are sent via Twilio.</div>
     <div class="modal-footer">
       <button class="btn btn-primary" onclick="saveSMSReminder()"><i class="ti ti-message" aria-hidden="true"></i> Activate reminders</button>
-      <button class="btn-outline" style="margin-top:0" onclick="closeModal('sms-modal')">Cancel</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('sms-modal')"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
     </div>
   </div>
 </div>
@@ -2265,7 +2265,7 @@ a{text-decoration:none}
     <div class="info-banner warn"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Unpaid fines will escalate to enforcement action regardless of whether they appear in this app.</div>
     <div class="modal-footer">
       <button class="btn btn-primary" style="background:linear-gradient(135deg,var(--red),#c0392b);box-shadow:0 0 20px rgba(255,77,109,0.3)" onclick="confirmDelete()"><i class="ti ti-trash" aria-hidden="true"></i> Yes, remove it</button>
-      <button class="btn-outline" style="margin-top:0" onclick="closeModal('del-modal')">Keep it</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('del-modal')"><i class="ti ti-arrow-back" aria-hidden="true"></i> Keep it</button>
     </div>
   </div>
 </div>
@@ -2316,7 +2316,7 @@ a{text-decoration:none}
     <div style="margin-bottom:1rem"><label class="fl">Notes (optional)</label><input class="fi no-icon" id="fm-notes" placeholder="e.g. P2 licence, business vehicle"></div>
     <div class="modal-footer">
       <button class="btn btn-primary" onclick="saveFamilyMember()"><i class="ti ti-check" aria-hidden="true"></i> Save member</button>
-      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-modal')">Cancel</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-modal')"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
     </div>
   </div>
 </div>
@@ -2329,7 +2329,7 @@ a{text-decoration:none}
     <input type="hidden" id="fm-del-id">
     <div class="modal-footer">
       <button class="btn btn-primary" style="background:linear-gradient(135deg,var(--red),#c0392b);box-shadow:0 0 20px rgba(255,77,109,0.3)" onclick="confirmDeleteFamilyMember()"><i class="ti ti-trash" aria-hidden="true"></i> Remove</button>
-      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-del-modal')">Keep</button>
+      <button class="btn-outline" style="margin-top:0" onclick="closeModal('family-del-modal')"><i class="ti ti-arrow-back" aria-hidden="true"></i> Keep</button>
     </div>
   </div>
 </div>
