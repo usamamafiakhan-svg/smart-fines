@@ -2741,23 +2741,30 @@ async function deleteAccount(){
   if(!pwd){errEl.textContent='Please enter your password.';errEl.style.display='block';return;}
   const{data:{session}}=await sb.auth.getSession();
   if(!session){errEl.textContent='Session expired. Please sign in again.';errEl.style.display='block';return;}
-  // Re-authenticate to verify password
+  // Re-authenticate to verify password before deleting
   const{error:signInErr}=await sb.auth.signInWithPassword({email:session.user.email,password:pwd});
   if(signInErr){errEl.textContent='Incorrect password. Please try again.';errEl.style.display='block';return;}
   btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Deleting…';
-  // Delete all user data
-  await sb.from('fines').delete().eq('user_id',_uid);
-  await sb.from('reminders').delete().eq('user_id',_uid);
-  await sb.from('profiles').delete().eq('id',_uid);
-  // Delete auth user via admin function or sign out (Supabase requires admin to delete user)
-  // We sign out and mark account as deleted via edge function if available; fallback: sign out
+  // Call Edge Function to fully delete user (auth + all data) using service role
+  const{data:{session:freshSession}}=await sb.auth.getSession();
+  const res=await fetch(SUPA_URL+'/functions/v1/delete-account',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+freshSession.access_token,'Content-Type':'application/json'}
+  });
+  if(!res.ok){
+    const err=await res.text();
+    errEl.textContent='Failed to delete account. Please try again.';
+    errEl.style.display='block';
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-trash" aria-hidden="true"></i> Delete';
+    console.error('Delete account error:',err);
+    return;
+  }
   await sb.auth.signOut();
   closeDeleteModal();
   _uid=null;_db={fines:[],family:[],reminders:[],profile:{}};
   document.getElementById('app-shell').style.display='none';
   document.getElementById('auth-shell').style.display='block';
   goStep('s-signin');
-  // Show success toast
   showToast('Account deleted successfully.');
 }
 
